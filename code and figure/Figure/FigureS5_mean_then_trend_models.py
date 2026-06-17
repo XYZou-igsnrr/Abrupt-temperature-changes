@@ -46,7 +46,7 @@ for i, model in enumerate(models):
     print(model)
 
     if model=='CRUJRA':
-        sudden_Tmean_change_csv =pd.read_csv("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/multi-threshold/CRUJRA_T_sudden_change_±10°C_1970_2020.csv")
+        sudden_Tmean_change_csv =pd.read_csv("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/multi-threshold/CRUJRA_multi_sudden_tmp_change_±10°C_1970_2020.csv")
         Global_ATCw = sudden_Tmean_change_csv ['Global_ATCw']*365
         Global_ATCc = sudden_Tmean_change_csv ['Global_ATCc']*365
         NH_ATCw    = sudden_Tmean_change_csv ['Northern_ATCw']*365

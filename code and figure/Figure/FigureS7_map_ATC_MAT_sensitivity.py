@@ -15,9 +15,30 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 import matplotlib.colors as mcolors
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from scipy.stats import linregress
-
+import warnings
+warnings.filterwarnings('ignore', category=RuntimeWarning)
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
+
+
+def weighted_nanstd(data, weights, lat_cond):
+    mask = lat_cond
+    d = data[mask, :].flatten()
+    w = weights[mask, :].flatten()
+
+    valid = ~(np.isnan(d) | np.isnan(w))# 同时剔除 data 和 weight 中任一为 NaN 的位置
+    d, w = d[valid], w[valid]
+
+    mean = np.average(d, weights=w)
+    return np.sqrt(np.average((d - mean)**2, weights=w))
+
+def weighted_nanmean(data, weights, lat_cond):
+    mask = lat_cond
+    d = data[mask, :].flatten()
+    w = weights[mask, :].flatten()
+    valid = ~(np.isnan(d) | np.isnan(w))
+    d, w = d[valid], w[valid]
+    return np.average(d, weights=w)
 
 def aggregate_slopes(slopes, sig_mask):
     n_models, lat_dim, lon_dim = slopes.shape
@@ -85,12 +106,12 @@ ATCc_slope_CMIP6=[]
 ATCw_pvalue_CMIP6=[]
 ATCc_pvalue_CMIP6=[]
 
-Global_ATCw_slope_CMIP6=[]
-Global_ATCc_slope_CMIP6=[]
-Northern_ATCw_slope_CMIP6=[]
-Northern_ATCc_slope_CMIP6=[]
-Southern_ATCw_slope_CMIP6=[]
-Southern_ATCc_slope_CMIP6=[]
+#Global_ATCw_slope_CMIP6=[]
+#Global_ATCc_slope_CMIP6=[]
+#Northern_ATCw_slope_CMIP6=[]
+#Northern_ATCc_slope_CMIP6=[]
+#Southern_ATCw_slope_CMIP6=[]
+#Southern_ATCc_slope_CMIP6=[]
 
 for i, model in enumerate(models):
     print(model)
@@ -107,20 +128,20 @@ for i, model in enumerate(models):
     ATCw_pvalue_CMIP6.append(dataset['T_change_up_freq_trend_p_value'][:])
     ATCc_pvalue_CMIP6.append(dataset['T_change_down_freq_trend_p_value'][:])    
 
-    sudden_Tmean_change_csv =pd.read_csv("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/"+str(model)+"/multi-threshold/"+str(model)+"_T_sudden_change_±10°C_1970_2015_MAT.csv")
-    Global_ATCw_slope, _, _, Global_ATCw_pValue, _ = linregress(sudden_Tmean_change_csv ['Global_MAT'], sudden_Tmean_change_csv ['Global_ATCw'])
-    Global_ATCc_slope, _, _, Global_ATCc_pValue, _ = linregress(sudden_Tmean_change_csv ['Global_MAT'], sudden_Tmean_change_csv ['Global_ATCc'])
-    Northern_ATCw_slope, _, _, Northern_ATCw_pValue, _ = linregress(sudden_Tmean_change_csv ['Northern_MAT'], sudden_Tmean_change_csv ['Northern_ATCw'])
-    Northern_ATCc_slope, _, _, Northern_ATCc_pValue, _ = linregress(sudden_Tmean_change_csv ['Northern_MAT'], sudden_Tmean_change_csv ['Northern_ATCc'])
-    Southern_ATCw_slope, _, _, Southern_ATCw_pValue, _ = linregress(sudden_Tmean_change_csv ['Southern_MAT'], sudden_Tmean_change_csv ['Southern_ATCw'])
-    Southern_ATCc_slope, _, _, Southern_ATCc_pValue, _ = linregress(sudden_Tmean_change_csv ['Southern_MAT'], sudden_Tmean_change_csv ['Southern_ATCc'])
+#    sudden_Tmean_change_csv =pd.read_csv("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/"+str(model)+"/multi-threshold/"+str(model)+"_T_sudden_change_±10°C_1970_2015_MAT.csv")
+#    Global_ATCw_slope, _, _, Global_ATCw_pValue, _ = linregress(sudden_Tmean_change_csv ['Global_MAT'], sudden_Tmean_change_csv ['Global_ATCw'])
+#    Global_ATCc_slope, _, _, Global_ATCc_pValue, _ = linregress(sudden_Tmean_change_csv ['Global_MAT'], sudden_Tmean_change_csv ['Global_ATCc'])
+#    Northern_ATCw_slope, _, _, Northern_ATCw_pValue, _ = linregress(sudden_Tmean_change_csv ['Northern_MAT'], sudden_Tmean_change_csv ['Northern_ATCw'])
+#    Northern_ATCc_slope, _, _, Northern_ATCc_pValue, _ = linregress(sudden_Tmean_change_csv ['Northern_MAT'], sudden_Tmean_change_csv ['Northern_ATCc'])
+#    Southern_ATCw_slope, _, _, Southern_ATCw_pValue, _ = linregress(sudden_Tmean_change_csv ['Southern_MAT'], sudden_Tmean_change_csv ['Southern_ATCw'])
+#    Southern_ATCc_slope, _, _, Southern_ATCc_pValue, _ = linregress(sudden_Tmean_change_csv ['Southern_MAT'], sudden_Tmean_change_csv ['Southern_ATCc'])
 
-    Global_ATCw_slope_CMIP6.append(Global_ATCw_slope if Global_ATCw_pValue < 0.05 else 0)
-    Global_ATCc_slope_CMIP6.append(Global_ATCc_slope if Global_ATCc_pValue < 0.05 else 0)
-    Northern_ATCw_slope_CMIP6.append(Northern_ATCw_slope if Northern_ATCw_pValue < 0.05 else 0)
-    Northern_ATCc_slope_CMIP6.append(Northern_ATCc_slope if Northern_ATCc_pValue < 0.05 else 0)
-    Southern_ATCw_slope_CMIP6.append(Southern_ATCw_slope if Southern_ATCw_pValue < 0.05 else 0)
-    Southern_ATCc_slope_CMIP6.append(Southern_ATCc_slope if Southern_ATCc_pValue < 0.05 else 0)
+#    Global_ATCw_slope_CMIP6.append(Global_ATCw_slope if Global_ATCw_pValue < 0.05 else 0)
+#    Global_ATCc_slope_CMIP6.append(Global_ATCc_slope if Global_ATCc_pValue < 0.05 else 0)
+#    Northern_ATCw_slope_CMIP6.append(Northern_ATCw_slope if Northern_ATCw_pValue < 0.05 else 0)
+#    Northern_ATCc_slope_CMIP6.append(Northern_ATCc_slope if Northern_ATCc_pValue < 0.05 else 0)
+#    Southern_ATCw_slope_CMIP6.append(Southern_ATCw_slope if Southern_ATCw_pValue < 0.05 else 0)
+#    Southern_ATCc_slope_CMIP6.append(Southern_ATCc_slope if Southern_ATCc_pValue < 0.05 else 0)
     
 ATCw_slope_CMIP6 = np.array(ATCw_slope_CMIP6)  
 ATCc_slope_CMIP6 = np.array(ATCc_slope_CMIP6)
@@ -157,6 +178,9 @@ for i, model in enumerate(models):
         ATCc_slope[ATCc_pvalue > 0.05] = 0
         ATCc_slope[ATCc_pvalue == 1] = np.nan
 
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_area.nc")
+        area_weight=data_area['cell_area'][:]
+
 
     elif model=='ERA5':
         dataset = ERA5_dataset
@@ -170,13 +194,19 @@ for i, model in enumerate(models):
         ATCc_slope[ATCc_pvalue > 0.05] = 0
         ATCc_slope[ATCc_pvalue == 1] = np.nan
 
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_area.nc")
+        area_weight=data_area['cell_area'][:]
+
 
     else:
-        dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/ACCESS-ESM1-5/T_change_freq_ACCESS-ESM1-5_yearly_1970-2015-rescale.nc")
+        dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/ACCESS-ESM1-5/T_change_freq_ACCESS-ESM1-5_MAT_sensitivity_1970-2015-rescale.nc")
         ATCw_slope=ATCw_ave_CMIP6.copy()
         ATCc_slope=ATCc_ave_CMIP6.copy()
         ATCw_slope[~np.isnan(ATCw_slope) & ~ATCw_sig_mask] = 0
         ATCc_slope[~np.isnan(ATCc_slope) & ~ATCc_sig_mask] = 0
+
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/CMIP6_0.5d_area.nc")
+        area_weight=data_area['cell_area'][:]
 
 
     if 'latitude' in dataset.variables:
@@ -186,29 +216,35 @@ for i, model in enumerate(models):
         lat = dataset['lat'][:]
         lon = dataset['lon'][:]
 
+#    ATCw_slope_global_mean=np.nanmean(ATCw_slope[lat>-60,:])
+#    ATCw_slope_NH_mean    =np.nanmean(ATCw_slope[lat>0,:])
+#    ATCw_slope_SH_mean    =np.nanmean(ATCw_slope[(lat<0)&(lat>-60),:])
+#    ATCw_slope_global_std =np.nanstd(ATCw_slope[lat>-60,:])
+#    ATCw_slope_NH_std     =np.nanstd(ATCw_slope[lat>0,:])
+#    ATCw_slope_SH_std     =np.nanstd(ATCw_slope[(lat<0)&(lat>-60),:])   
+#
+#
+#    ATCc_slope_global_mean=np.nanmean(ATCc_slope[lat>-60,:])
+#    ATCc_slope_NH_mean    =np.nanmean(ATCc_slope[lat>0,:])
+#    ATCc_slope_SH_mean    =np.nanmean(ATCc_slope[(lat<0)&(lat>-60),:])
+#    ATCc_slope_global_std =np.nanstd(ATCc_slope[lat>-60,:])
+#    ATCc_slope_NH_std     =np.nanstd(ATCc_slope[lat>0,:])
+#    ATCc_slope_SH_std     =np.nanstd(ATCc_slope[(lat<0)&(lat>-60),:])
 
-    #stats.sem(data_2d, nan_policy=nan_policy)
+    ATCw_slope_global_mean = weighted_nanmean(ATCw_slope, area_weight, lat > -60)
+    ATCw_slope_NH_mean     = weighted_nanmean(ATCw_slope, area_weight, lat > 0)
+    ATCw_slope_SH_mean     = weighted_nanmean(ATCw_slope, area_weight, (lat < 0) & (lat > -60))
+    ATCw_slope_global_std  = weighted_nanstd(ATCw_slope, area_weight, lat > -60)
+    ATCw_slope_NH_std      = weighted_nanstd(ATCw_slope, area_weight, lat > 0)
+    ATCw_slope_SH_std      = weighted_nanstd(ATCw_slope, area_weight, (lat < 0) & (lat > -60))
 
-    ATCw_slope_global_mean=np.nanmean(ATCw_slope[lat>-60,:])
-    ATCw_slope_NH_mean    =np.nanmean(ATCw_slope[lat>0,:])
-    ATCw_slope_SH_mean    =np.nanmean(ATCw_slope[(lat<0)&(lat>-60),:])
-    ATCw_slope_global_std =np.nanstd(ATCw_slope[lat>-60,:])
-    ATCw_slope_NH_std     =np.nanstd(ATCw_slope[lat>0,:])
-    ATCw_slope_SH_std     =np.nanstd(ATCw_slope[(lat<0)&(lat>-60),:])   
-    ATCw_slope_global_SE  =stats.sem(ATCw_slope.flatten(), nan_policy='omit')
-    ATCw_slope_NH_SE      =stats.sem(ATCw_slope[lat>0,:].flatten(), nan_policy='omit')
-    ATCw_slope_SH_SE      =stats.sem(ATCw_slope[(lat<0)&(lat>-60),:].flatten(), nan_policy='omit')
-
-
-    ATCc_slope_global_mean=np.nanmean(ATCc_slope[lat>-60,:])
-    ATCc_slope_NH_mean    =np.nanmean(ATCc_slope[lat>0,:])
-    ATCc_slope_SH_mean    =np.nanmean(ATCc_slope[(lat<0)&(lat>-60),:])
-    ATCc_slope_global_std =np.nanstd(ATCc_slope[lat>-60,:])
-    ATCc_slope_NH_std     =np.nanstd(ATCc_slope[lat>0,:])
-    ATCc_slope_SH_std     =np.nanstd(ATCc_slope[(lat<0)&(lat>-60),:])    
-    ATCc_slope_global_SE  =stats.sem(ATCc_slope.flatten(), nan_policy='omit')
-    ATCc_slope_NH_SE      =stats.sem(ATCc_slope[lat>0,:].flatten(), nan_policy='omit')
-    ATCc_slope_SH_SE      =stats.sem(ATCc_slope[(lat<0)&(lat>-60),:].flatten(), nan_policy='omit')
+    # ATCc_frac
+    ATCc_slope_global_mean = weighted_nanmean(ATCc_slope, area_weight, lat > -60)
+    ATCc_slope_NH_mean     = weighted_nanmean(ATCc_slope, area_weight, lat > 0)
+    ATCc_slope_SH_mean     = weighted_nanmean(ATCc_slope, area_weight, (lat > -60) & (lat < 0))
+    ATCc_slope_global_std  = weighted_nanstd(ATCc_slope, area_weight, lat > -60)
+    ATCc_slope_NH_std      = weighted_nanstd(ATCc_slope, area_weight, lat > 0)
+    ATCc_slope_SH_std      = weighted_nanstd(ATCc_slope, area_weight, (lat < 0) & (lat > -60))
 
 
     all_data.extend([
@@ -353,6 +389,7 @@ ax_inset4.barh(y=x, width=ATCc_frac_data['Value'].values, height=width, color='#
 
 #==================================================CMIP6 trend============================================================#
 interval = 3
+dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/ACCESS-ESM1-5/T_change_freq_ACCESS-ESM1-5_MAT_sensitivity_1970-2015-rescale.nc")
 lon=dataset['lon'][:]
 lat=dataset['lat'][:]
 lon2d, lat2d = np.meshgrid(lon, lat)

@@ -79,7 +79,7 @@ def plot_line(axes,ATC_csv_dataset,label):
         ax.set_yticks(yticks)
         ax.yaxis.set_minor_locator(ticker.NullLocator())
         ax.set_yticklabels([r'$10^{-2}$',r'$10^{-1}$',r'$10^{0}$', r'$10^{1}$', r'$10^{2}$', '300'])
-        ax.set_xlim(1, 16)
+        ax.set_xlim(1, 17)
         ax.legend().remove()
         ax.set_xticks(xticks)
         ax.set_xticklabels(xticklabels)
@@ -100,7 +100,7 @@ def plot_line(axes,ATC_csv_dataset,label):
         ax.set_ylabel("")
             
         ax.set_ylim(-1, 1)
-        ax.set_xlim(1, 16)
+        ax.set_xlim(1, 17)
         ax.legend().remove()
         ax.set_yticks([])
         ax.yaxis.set_major_locator(ticker.MaxNLocator(5))
@@ -165,7 +165,7 @@ CMIP6_data_Southern_rel_d = []
 for i, model in enumerate(models):
     print(model)
     print(i)
-    ATC_csv_dataset = pd.read_csv("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/"+str(model)+"/multi-threshold/ATC_multi_thresholds_time_trend_1970_2015_10yr.csv")
+    ATC_csv_dataset = pd.read_csv("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/"+str(model)+"/multi-threshold/ATC_multi_thresholds_time_trend_1970_2015.csv")
 
 
     gradient=ATC_csv_dataset['Temperature threshold']

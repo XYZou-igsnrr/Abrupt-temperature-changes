@@ -16,9 +16,30 @@ import matplotlib.colors as mcolors
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from scipy.stats import linregress
 from matplotlib.colors import TwoSlopeNorm
-
+import warnings
+warnings.filterwarnings('ignore', category=RuntimeWarning)
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
+
+
+def weighted_nanstd(data, weights, lat_cond):
+    mask = lat_cond
+    d = data[mask, :].flatten()
+    w = weights[mask, :].flatten()
+
+    valid = ~(np.isnan(d) | np.isnan(w))# 同时剔除 data 和 weight 中任一为 NaN 的位置
+    d, w = d[valid], w[valid]
+
+    mean = np.average(d, weights=w)
+    return np.sqrt(np.average((d - mean)**2, weights=w))
+
+def weighted_nanmean(data, weights, lat_cond):
+    mask = lat_cond
+    d = data[mask, :].flatten()
+    w = weights[mask, :].flatten()
+    valid = ~(np.isnan(d) | np.isnan(w))
+    d, w = d[valid], w[valid]
+    return np.average(d, weights=w)
 
 def aggregate_slopes(slopes, sig_mask):
     n_models, lat_dim, lon_dim = slopes.shape
@@ -137,12 +158,14 @@ all_data = []
 for i, model in enumerate(models):
     print(model)
     if model=='CRUJRA':
-        dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_sudden_T_change_freq_trend_±10°C_1970_2020.nc")
+        dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/ATC_trend_spatial_±10°C_1970_2020_MK.nc")
         ATC_slope=CRUJRA_ATC_slope.copy()
         ATC_pvalue=CRUJRA_ATC_pvalue.copy()
         ATC_slope[ATC_pvalue > 0.05] = 0
         ATC_slope[ATC_pvalue == 1] = np.nan
         ATC_frac_d  =CRUJRA_ATC_frac_d.copy()
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_area.nc")
+        area_weight=data_area['cell_area'][:]
 
 
     elif model=='ERA5':
@@ -152,6 +175,8 @@ for i, model in enumerate(models):
         ATC_slope[ATC_pvalue > 0.05] = 0
         ATC_slope[ATC_pvalue == 1] = np.nan
         ATC_frac_d  =ERA5_ATC_frac_d.copy()
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_area.nc")
+        area_weight=data_area['cell_area'][:]
 
 
     else:
@@ -159,6 +184,8 @@ for i, model in enumerate(models):
         ATC_slope=ATC_ave_CMIP6.copy()
         ATC_slope[~np.isnan(ATC_slope) & ~ATC_sig_mask] = 0
         ATC_frac_d  =CMIP6_ATC_frac_d.copy()
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/CMIP6_0.5d_area.nc")
+        area_weight=data_area['cell_area'][:]
 
 
     if 'latitude' in dataset.variables:
@@ -185,14 +212,6 @@ for i, model in enumerate(models):
     NH_ATC_frac_d_std =np.nanstd(ATC_frac_d[lat>0,:])
     SH_ATC_frac_d_std =np.nanstd(ATC_frac_d[(lat<0)&(lat>-60),:])
     
-#    ATC_slope_global_raw = ATC_slope_global_raw[ATC_slope_global_raw != 0]
-#    ATC_slope_NH_raw = ATC_slope_NH_raw[ATC_slope_NH_raw != 0]
-#    ATC_slope_SH_raw = ATC_slope_SH_raw[ATC_slope_SH_raw != 0]
-#    
-#    global_ATC_frac_d_raw = global_ATC_frac_d_raw[global_ATC_frac_d_raw != 0]
-#    NH_ATC_frac_d_raw = NH_ATC_frac_d_raw[NH_ATC_frac_d_raw != 0]
-#    SH_ATC_frac_d_raw = SH_ATC_frac_d_raw[SH_ATC_frac_d_raw != 0]
-
 
     all_data.extend([
             {'Model': model, 'Region': 'Globe', 'Type': 'ATC_slope_sp', 'Value': ATC_slope_global_raw,'error': ATC_slope_global_std},
@@ -228,9 +247,6 @@ axes = np.empty((3, 2), dtype=object)
 for row in range(3):
     axes[row, 0] = fig.add_subplot(gs_top[row, 0], projection=ccrs.PlateCarree())  # 地图投影
     axes[row, 1] = fig.add_subplot(gs_top[row, 1], projection=ccrs.PlateCarree())  # 地图投影
-
-
-
 
 
 vmin_time=-0.10

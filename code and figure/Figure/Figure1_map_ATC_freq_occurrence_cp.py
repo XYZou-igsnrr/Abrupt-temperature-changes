@@ -17,9 +17,32 @@ from matplotlib.ticker import FormatStrFormatter
 import seaborn as sns
 from scipy.stats import gaussian_kde
 import scipy.stats as stats
-
+import warnings
+warnings.filterwarnings('ignore', category=RuntimeWarning)
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
+
+
+def weighted_nanstd(data, weights, lat_cond):
+    mask = lat_cond
+    d = data[mask, :].flatten()
+    w = weights[mask, :].flatten()
+
+    valid = ~(np.isnan(d) | np.isnan(w))# 同时剔除 data 和 weight 中任一为 NaN 的位置
+    d, w = d[valid], w[valid]
+
+    mean = np.average(d, weights=w)
+    return np.sqrt(np.average((d - mean)**2, weights=w))
+
+def weighted_nanmean(data, weights, lat_cond):
+    mask = lat_cond
+    d = data[mask, :].flatten()
+    w = weights[mask, :].flatten()
+    valid = ~(np.isnan(d) | np.isnan(w))
+    d, w = d[valid], w[valid]
+    return np.average(d, weights=w)
+
+
 
 #=========================================load ISD data===================================================#
 station_up = pd.read_csv("/data1/zxy/sudden_temp_change/ISD-global-daily/station_sudden_change_+10°C_after_1973.csv")
@@ -50,10 +73,22 @@ ERA5_ATC_freq = ERA5_ATCw + ERA5_ATCc
 
 ERA5_ATC_freq=np.nanmean(ERA5_ATC_freq,axis=0)
 
-print(ERA5_ATCc.shape)
 ERA5_ATCc_frac=ERA5_ATCc[:]/(ERA5_ATCw[:]+ERA5_ATCc[:])
-print(ERA5_ATCc_frac.shape)
 ERA5_ATCc_frac=np.nanmean(ERA5_ATCc_frac,axis=0)
+#print(ERA5_ATCc.shape)
+#print(ERA5_ATCc_frac.shape)
+
+data_area = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_area.nc")
+area_weight=data_area['cell_area'][:]
+
+ERA5_global_ATCw = weighted_nanmean(np.nanmean(ERA5_ATCw,axis=0), area_weight, ERA5_lat > -60)
+ERA5_global_ATCc = weighted_nanmean(np.nanmean(ERA5_ATCc,axis=0), area_weight, ERA5_lat > -60)
+ERA5_global_ATCw_std = weighted_nanstd(np.nanmean(ERA5_ATCw,axis=0), area_weight, ERA5_lat > -60)
+ERA5_global_ATCc_std = weighted_nanstd(np.nanmean(ERA5_ATCc,axis=0), area_weight, ERA5_lat > -60)
+
+
+print("ERA5_global_ATCw",ERA5_global_ATCw,"ERA5_global_ATCw_std",ERA5_global_ATCw_std,)
+print("ERA5_global_ATCc",ERA5_global_ATCc,"ERA5_global_ATCc_std",ERA5_global_ATCc_std,)
 
 #=========================================load CRUJRA data===================================================#
 CRUJRA_dataset=nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/EOF/CRUJRA_sudden_T_change_freq_trend_±10°C_1970_2020_yearly.nc")
@@ -69,6 +104,16 @@ CRUJRA_ATC_freq=np.nanmean(CRUJRA_ATC_freq,axis=0)
 CRUJRA_ATCc_frac=CRUJRA_ATCc[:]/(CRUJRA_ATCw[:]+CRUJRA_ATCc[:])
 CRUJRA_ATCc_frac=np.nanmean(CRUJRA_ATCc_frac,axis=0)
 
+data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_area.nc")
+area_weight=data_area['cell_area'][:]
+
+CRUJRA_global_ATCw = weighted_nanmean(np.nanmean(CRUJRA_ATCw,axis=0), area_weight, CRUJRA_lat > -60)
+CRUJRA_global_ATCc = weighted_nanmean(np.nanmean(CRUJRA_ATCc,axis=0), area_weight, CRUJRA_lat > -60)
+CRUJRA_global_ATCw_std = weighted_nanstd(np.nanmean(CRUJRA_ATCw,axis=0), area_weight, CRUJRA_lat > -60)
+CRUJRA_global_ATCc_std = weighted_nanstd(np.nanmean(CRUJRA_ATCc,axis=0), area_weight, CRUJRA_lat > -60)
+
+print("CRUJRA_global_ATCw",CRUJRA_global_ATCw,"CRUJRA_global_ATCw_std",CRUJRA_global_ATCw_std)
+print("CRUJRA_global_ATCc",CRUJRA_global_ATCc,"CRUJRA_global_ATCc_std",CRUJRA_global_ATCc_std)
 
 #==========================================load CMIP6 data===========================================#
 
@@ -79,39 +124,51 @@ CMIP6_ATC_ave=[]
 CMIP6_ATCc_frac_ave=[]
 CMIP6_ATCc_frac_d=[]
 
-Global_CMIP6_ATCc_frac_ave=[]
-Global_CMIP6_ATCc_frac_d=[]
-Northern_CMIP6_ATCc_frac_ave=[]
-Northern_CMIP6_ATCc_frac_d=[]
-Southern_CMIP6_ATCc_frac_ave=[]
-Southern_CMIP6_ATCc_frac_d=[]
+#Global_CMIP6_ATCc_frac_ave=[]
+#Global_CMIP6_ATCc_frac_d=[]
+#Northern_CMIP6_ATCc_frac_ave=[]
+#Northern_CMIP6_ATCc_frac_d=[]
+#Southern_CMIP6_ATCc_frac_ave=[]
+#Southern_CMIP6_ATCc_frac_d=[]
 
+Global_CMIP6_ATCc=[]
+Global_CMIP6_ATCw=[]
 
 for i, model in enumerate(models):
     print(model)
-    dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/"+str(model)+"/T_change_freq_"+str(model)+"_yearly_1970-2015-rescale.nc")
+    dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/"+str(model)+"/T_change_freq_"+str(model)+"_yearly_1970-2015_mk-rescale.nc")
     if 'latitude' in dataset.variables:
-        lat = dataset['latitude'][:]
-        lon = dataset['longitude'][:]
+        CMIP6_lat = dataset['latitude'][:]
+        CMIP6_lon = dataset['longitude'][:]
     elif 'lat' in dataset.variables:
-        lat = dataset['lat'][:]
-        lon = dataset['lon'][:]
+        CMIP6_lat = dataset['lat'][:]
+        CMIP6_lon = dataset['lon'][:]
 
     ATCw = np.array(dataset['T_change_up_freq'][:])*365
     ATCc = np.array(dataset['T_change_down_freq'][:])*365
-    ATC  = ATCc + ATCw
-    ATC_frac=ATCc[:]/(ATCw[:]+ATCc[:])
+    ATC  = ATCw[:]+ATCc[:]
+    ATC_frac=ATCc[:]/ATC[:]
     ATC_frac_ave=np.nanmean(ATC_frac,axis=0)
 
     CMIP6_ATC_ave.append(np.nanmean(ATC,axis=0))
+
+    Global_CMIP6_ATCw.append(np.nanmean(ATCw,axis=0))
+    Global_CMIP6_ATCc.append(np.nanmean(ATCc,axis=0))
     CMIP6_ATCc_frac_ave.append(ATC_frac_ave)
 
 
 CMIP6_ATC_ave      =np.nanmean(CMIP6_ATC_ave,axis=0)
 CMIP6_ATCc_frac_ave=np.nanmean(CMIP6_ATCc_frac_ave,axis=0)
 
-CMIP6_lat=lat
-CMIP6_lon=lon
+data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/CMIP6_0.5d_area.nc")
+area_weight=data_area['cell_area'][:]
+CMIP6_global_ATCw = weighted_nanmean(np.nanmean(Global_CMIP6_ATCw,axis=0), area_weight, CMIP6_lat > -60)
+CMIP6_global_ATCc = weighted_nanmean(np.nanmean(Global_CMIP6_ATCc,axis=0), area_weight, CMIP6_lat > -60)
+CMIP6_global_ATCw_std = weighted_nanstd(np.nanmean(Global_CMIP6_ATCw,axis=0), area_weight, CMIP6_lat > -60)
+CMIP6_global_ATCc_std = weighted_nanstd(np.nanmean(Global_CMIP6_ATCc,axis=0), area_weight, CMIP6_lat > -60)
+
+print("CMIP6_global_ATCw",CMIP6_global_ATCw,"CMIP6_global_ATCw_std",CMIP6_global_ATCw_std)
+print("CMIP6_global_ATCc",CMIP6_global_ATCc,"CMIP6_global_ATCc_std",CMIP6_global_ATCc_std)
 
 
 
@@ -119,22 +176,24 @@ CMIP6_lon=lon
 
 
 models=['ISD','CRUJRA','ERA5','CMIP6']
-Global_ATCc_frac_d_std  =None
-Northern_ATCc_frac_d_std=None
-Southern_ATCc_frac_d_std=None
+
 all_data = []
 for i, model in enumerate(models):
     print(model)
     if model=='CRUJRA':
         dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/EOF/CRUJRA_sudden_T_change_freq_trend_±10°C_1970_2020_yearly.nc")
-        ATC_freq =CRUJRA_ATC_freq
-        ATCc_frac=CRUJRA_ATCc_frac
+        ATC_freq =CRUJRA_ATC_freq.copy()
+        ATCc_frac=CRUJRA_ATCc_frac.copy()
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_area.nc")
+        area_weight=data_area['cell_area'][:]
 
 
     elif model=='ERA5':
         dataset = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/LFCA/T_change_freq_ERA5_yearly_1970-2020.nc")
-        ATC_freq   =ERA5_ATC_freq
-        ATCc_frac  =ERA5_ATCc_frac
+        ATC_freq   =ERA5_ATC_freq.copy()
+        ATCc_frac  =ERA5_ATCc_frac.copy()
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_area.nc")
+        area_weight=data_area['cell_area'][:]
 
 
     elif model=='ISD':
@@ -167,10 +226,11 @@ for i, model in enumerate(models):
         continue
 
     else:
-        dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/ACCESS-ESM1-5/T_change_freq_ACCESS-ESM1-5_yearly_1970-2015-rescale.nc")
-        ATC_freq   =CMIP6_ATC_ave
-        ATCc_frac  =CMIP6_ATCc_frac_ave
-        
+        dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/ACCESS-ESM1-5/T_change_freq_ACCESS-ESM1-5_yearly_1970-2015_mk-rescale.nc")
+        ATC_freq   =CMIP6_ATC_ave.copy()
+        ATCc_frac  =CMIP6_ATCc_frac_ave.copy()
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/CMIP6_0.5d_area.nc")
+        area_weight=data_area['cell_area'][:]
 
     if 'latitude' in dataset.variables:
         lat = dataset['latitude'][:]
@@ -180,19 +240,34 @@ for i, model in enumerate(models):
         lon = dataset['lon'][:]
 
     print(len(lat))
-    global_ATC_freq  =np.nanmean(ATC_freq[lat>-60,:])
-    NH_ATC_freq=np.nanmean(ATC_freq[lat>0,:])
-    SH_ATC_freq=np.nanmean(ATC_freq[(lat<0)&(lat>-60),:])
-    global_ATC_freq_std   =np.nanstd(ATC_freq[lat>-60,:])
-    NH_ATC_freq_std =np.nanstd(ATC_freq[lat>0,:])
-    SH_ATC_freq_std =np.nanstd(ATC_freq[(lat<0)&(lat>-60),:])
+#    global_ATC_freq  =np.nanmean(ATC_freq[lat>-60,:])
+#    NH_ATC_freq=np.nanmean(ATC_freq[lat>0,:])
+#    SH_ATC_freq=np.nanmean(ATC_freq[(lat<0)&(lat>-60),:])
+#    global_ATC_freq_std   =np.nanstd(ATC_freq[lat>-60,:])
+#    NH_ATC_freq_std =np.nanstd(ATC_freq[lat>0,:])
+#    SH_ATC_freq_std =np.nanstd(ATC_freq[(lat<0)&(lat>-60),:])
+#
+#    global_ATCc_frac  =np.nanmean(ATCc_frac[lat>-60,:])
+#    NH_ATCc_frac=np.nanmean(ATCc_frac[lat>0,:])
+#    SH_ATCc_frac=np.nanmean(ATCc_frac[(lat > -60) & (lat < 0),:])
+#    global_ATCc_frac_std   =np.nanstd(ATCc_frac[lat>-60,:])
+#    NH_ATCc_frac_std =np.nanstd(ATCc_frac[lat>0,:])
+#    SH_ATCc_frac_std =np.nanstd(ATCc_frac[(lat<0)&(lat>-60),:])
 
-    global_ATCc_frac  =np.nanmean(ATCc_frac[lat>-60,:])
-    NH_ATCc_frac=np.nanmean(ATCc_frac[lat>0,:])
-    SH_ATCc_frac=np.nanmean(ATCc_frac[(lat > -60) & (lat < 0),:])
-    global_ATCc_frac_std   =np.nanstd(ATCc_frac[lat>-60,:])
-    NH_ATCc_frac_std =np.nanstd(ATCc_frac[lat>0,:])
-    SH_ATCc_frac_std =np.nanstd(ATCc_frac[(lat<0)&(lat>-60),:])
+    global_ATC_freq = weighted_nanmean(ATC_freq, area_weight, lat > -60)
+    NH_ATC_freq = weighted_nanmean(ATC_freq, area_weight, lat > 0)
+    SH_ATC_freq = weighted_nanmean(ATC_freq, area_weight, (lat < 0) & (lat > -60))
+    global_ATC_freq_std = weighted_nanstd(ATC_freq, area_weight, lat > -60)
+    NH_ATC_freq_std = weighted_nanstd(ATC_freq, area_weight, lat > 0)
+    SH_ATC_freq_std = weighted_nanstd(ATC_freq, area_weight, (lat < 0) & (lat > -60))
+    
+    # ATCc_frac
+    global_ATCc_frac = weighted_nanmean(ATCc_frac, area_weight, lat > -60)
+    NH_ATCc_frac = weighted_nanmean(ATCc_frac, area_weight, lat > 0)
+    SH_ATCc_frac = weighted_nanmean(ATCc_frac, area_weight, (lat > -60) & (lat < 0))
+    global_ATCc_frac_std = weighted_nanstd(ATCc_frac, area_weight, lat > -60)
+    NH_ATCc_frac_std = weighted_nanstd(ATCc_frac, area_weight, lat > 0)
+    SH_ATCc_frac_std = weighted_nanstd(ATCc_frac, area_weight, (lat < 0) & (lat > -60))
 
     all_data.extend([
             {'Model': model, 'Region': 'Globe', 'Type': 'ATC',         'Value': global_ATC_freq,  'error': global_ATC_freq_std},
@@ -268,7 +343,7 @@ axes[0, 1].set_extent([-180, 180, -60, 90], crs=ccrs.PlateCarree())
 axes[0, 1].set_frame_on(False)
 
 
-ISD_df = df[df['Model'] == 'CRUJRA']
+ISD_df = df[df['Model'] == 'ISD']
 ATC_data = ISD_df[ISD_df['Type'] == 'ATC']
 ATCc_frac_data = ISD_df[ISD_df['Type'] == 'ATCc_frac']
 x = np.arange(len(region))
@@ -421,7 +496,8 @@ cbar_ATCc.set_label('ATCc fraction', fontsize=10, labelpad=-32)
 
 
 fig1 = plt.gcf()
-fig1.savefig(str(current_directory)+"/Figure1_map_ATC_freq_occurrence_cp.png", dpi=300)
+script_name = os.path.splitext(os.path.basename(__file__))[0]
+fig1.savefig(str(current_directory)+f"/{script_name}.png", dpi=300)
 #plt.show()
 
 

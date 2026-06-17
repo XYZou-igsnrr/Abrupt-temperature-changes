@@ -105,13 +105,35 @@ bars_Southern_ATCc_slope = []
 for i, model in enumerate(models):
     print(model)
     if model=='CRUJRA':     
-        sudden_Tmean_change_csv =pd.read_csv("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/multi-threshold/CRUJRA_T_sudden_change_±10°C_1970_2020.csv")        
+        sudden_Tmean_change_csv =pd.read_csv("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/multi-threshold/CRUJRA_multi_sudden_tmp_change_±10°C_1970_2020.csv")        
         Global_ATCw = sudden_Tmean_change_csv ['Global_ATCw']*365
         Global_ATCc = sudden_Tmean_change_csv ['Global_ATCc']*365
         NH_ATCw    = sudden_Tmean_change_csv ['Northern_ATCw']*365
         NH_ATCc    = sudden_Tmean_change_csv ['Northern_ATCc']*365
         SH_ATCw    = sudden_Tmean_change_csv ['Southern_ATCw']*365
         SH_ATCc    = sudden_Tmean_change_csv ['Southern_ATCc']*365
+
+        #cal trend 
+        Global_ATCw_slope, Global_ATCw_pValue, = mk.original_test(Global_ATCw).slope, mk.original_test(Global_ATCw).p,
+        Global_ATCc_slope, Global_ATCc_pValue, = mk.original_test(Global_ATCc).slope, mk.original_test(Global_ATCc).p,
+        Northern_ATCw_slope, Northern_ATCw_pValue, = mk.original_test(NH_ATCw).slope, mk.original_test(NH_ATCw).p,
+        Northern_ATCc_slope, Northern_ATCc_pValue, = mk.original_test(NH_ATCc).slope, mk.original_test(NH_ATCc).p,
+        Southern_ATCw_slope, Southern_ATCw_pValue, = mk.original_test(SH_ATCw).slope, mk.original_test(SH_ATCw).p,
+        Southern_ATCc_slope, Southern_ATCc_pValue, = mk.original_test(SH_ATCc).slope, mk.original_test(SH_ATCc).p,
+        
+        Global_ATCw_slope=Global_ATCw_slope if Global_ATCw_pValue < 0.05 else np.nan
+        Global_ATCc_slope=Global_ATCc_slope if Global_ATCc_pValue < 0.05 else np.nan
+        Northern_ATCw_slope=Northern_ATCw_slope if Northern_ATCw_pValue < 0.05 else np.nan
+        Northern_ATCc_slope=Northern_ATCc_slope if Northern_ATCc_pValue < 0.05 else np.nan
+        Southern_ATCw_slope=Southern_ATCw_slope if Southern_ATCw_pValue < 0.05 else np.nan
+        Southern_ATCc_slope=Southern_ATCc_slope if Southern_ATCc_pValue < 0.05 else np.nan
+        
+        bars_Global_ATCw_slope.append(Global_ATCw_slope)
+        bars_Global_ATCc_slope.append(Global_ATCc_slope)
+        bars_Northern_ATCw_slope.append(Northern_ATCw_slope)
+        bars_Northern_ATCc_slope.append(Northern_ATCc_slope)
+        bars_Southern_ATCw_slope.append(Southern_ATCw_slope)
+        bars_Southern_ATCc_slope.append(Southern_ATCc_slope) 
         
         size=3        
         Global_ATCw = uniform_filter1d(Global_ATCw, size=size, mode='reflect')
@@ -122,35 +144,14 @@ for i, model in enumerate(models):
         SH_ATCc = uniform_filter1d(SH_ATCc, size=size, mode='reflect') 
         
         #plot time series
-        years = np.arange(1970, 2020)
+        years = np.arange(1970, 2021)
         sns.lineplot(x=years, y=Global_ATCw, ax=axes[0,0], label='global ATCw',color=colors[1], zorder=1)
         sns.lineplot(x=years, y=Global_ATCc, ax=axes[0,1], label='global ATCc',color=colors[1], zorder=1) 
         sns.lineplot(x=years, y=NH_ATCw, ax=axes[1,0], label='NH ATCw',color=colors[1], zorder=1)
         sns.lineplot(x=years, y=NH_ATCc, ax=axes[1,1], label='NH ATCc',color=colors[1], zorder=1)               
         sns.lineplot(x=years, y=SH_ATCw, ax=axes[2,0], label='SH ATCw',color=colors[1], zorder=1)
         sns.lineplot(x=years, y=SH_ATCc, ax=axes[2,1], label='SH ATCc',color=colors[1], zorder=1) 
-        
-        #cal trend 
-        Global_ATCw_slope, Global_ATCw_pValue, = mk.original_test(Global_ATCw).slope, mk.original_test(Global_ATCw).p,
-        Global_ATCc_slope, Global_ATCc_pValue, = mk.original_test(Global_ATCc).slope, mk.original_test(Global_ATCc).p,
-        Northern_ATCw_slope, Northern_ATCw_pValue, = mk.original_test(NH_ATCw).slope, mk.original_test(NH_ATCw).p,
-        Northern_ATCc_slope, Northern_ATCc_pValue, = mk.original_test(NH_ATCc).slope, mk.original_test(NH_ATCc).p,
-        Southern_ATCw_slope, Southern_ATCw_pValue, = mk.original_test(SH_ATCw).slope, mk.original_test(SH_ATCw).p,
-        Southern_ATCc_slope, Southern_ATCc_pValue, = mk.original_test(SH_ATCc).slope, mk.original_test(SH_ATCc).p,
-        
-        Global_ATCw_slope=Global_ATCw_slope if Global_ATCw_pValue < 0.05 else 0
-        Global_ATCc_slope=Global_ATCc_slope if Global_ATCc_pValue < 0.05 else 0
-        Northern_ATCw_slope=Northern_ATCw_slope if Northern_ATCw_pValue < 0.05 else 0
-        Northern_ATCc_slope=Northern_ATCc_slope if Northern_ATCc_pValue < 0.05 else 0
-        Southern_ATCw_slope=Southern_ATCw_slope if Southern_ATCw_pValue < 0.05 else 0
-        Southern_ATCc_slope=Southern_ATCc_slope if Southern_ATCc_pValue < 0.05 else 0
-        
-        bars_Global_ATCw_slope.append(Global_ATCw_slope)
-        bars_Global_ATCc_slope.append(Global_ATCc_slope)
-        bars_Northern_ATCw_slope.append(Northern_ATCw_slope)
-        bars_Northern_ATCc_slope.append(Northern_ATCc_slope)
-        bars_Southern_ATCw_slope.append(Southern_ATCw_slope)
-        bars_Southern_ATCc_slope.append(Southern_ATCc_slope)            
+                   
 
     elif model=='ERA5':        
         sudden_Tmean_change_csv = pd.read_csv("/data1/zxy/sudden_temp_change/ERA5_tmp/multi-threshold/ERA5_T_sudden_change_±10°C_1970_2020.csv")        
@@ -160,6 +161,28 @@ for i, model in enumerate(models):
         NH_ATCc    = sudden_Tmean_change_csv ['Northern_ATCc']*365
         SH_ATCw    = sudden_Tmean_change_csv ['Southern_ATCw']*365
         SH_ATCc    = sudden_Tmean_change_csv ['Southern_ATCc']*365  
+
+        #cal trend 
+        Global_ATCw_slope, Global_ATCw_pValue, = mk.original_test(Global_ATCw).slope, mk.original_test(Global_ATCw).p,
+        Global_ATCc_slope, Global_ATCc_pValue, = mk.original_test(Global_ATCc).slope, mk.original_test(Global_ATCc).p,
+        Northern_ATCw_slope, Northern_ATCw_pValue, = mk.original_test(NH_ATCw).slope, mk.original_test(NH_ATCw).p,
+        Northern_ATCc_slope, Northern_ATCc_pValue, = mk.original_test(NH_ATCc).slope, mk.original_test(NH_ATCc).p,
+        Southern_ATCw_slope, Southern_ATCw_pValue, = mk.original_test(SH_ATCw).slope, mk.original_test(SH_ATCw).p,
+        Southern_ATCc_slope, Southern_ATCc_pValue, = mk.original_test(SH_ATCc).slope, mk.original_test(SH_ATCc).p,
+        
+        Global_ATCw_slope=Global_ATCw_slope if Global_ATCw_pValue < 0.05 else np.nan
+        Global_ATCc_slope=Global_ATCc_slope if Global_ATCc_pValue < 0.05 else np.nan
+        Northern_ATCw_slope=Northern_ATCw_slope if Northern_ATCw_pValue < 0.05 else np.nan
+        Northern_ATCc_slope=Northern_ATCc_slope if Northern_ATCc_pValue < 0.05 else np.nan
+        Southern_ATCw_slope=Southern_ATCw_slope if Southern_ATCw_pValue < 0.05 else np.nan
+        Southern_ATCc_slope=Southern_ATCc_slope if Southern_ATCc_pValue < 0.05 else np.nan
+        
+        bars_Global_ATCw_slope.append(Global_ATCw_slope)
+        bars_Global_ATCc_slope.append(Global_ATCc_slope)
+        bars_Northern_ATCw_slope.append(Northern_ATCw_slope)
+        bars_Northern_ATCc_slope.append(Northern_ATCc_slope)
+        bars_Southern_ATCw_slope.append(Southern_ATCw_slope)
+        bars_Southern_ATCc_slope.append(Southern_ATCc_slope) 
         
         size=3        
         Global_ATCw = uniform_filter1d(Global_ATCw, size=size, mode='reflect')
@@ -177,6 +200,17 @@ for i, model in enumerate(models):
         sns.lineplot(x=years, y=SH_ATCw, ax=axes[2,0], label='SH ATCw',color=colors[2], zorder=1)
         sns.lineplot(x=years, y=SH_ATCc, ax=axes[2,1], label='SH ATCc',color=colors[2], zorder=1)  
         
+              
+        
+    elif model=='ISD':
+        sudden_Tmean_change_csv = pd.read_csv("/data1/zxy/sudden_temp_change/ISD-global-daily/multi-threshold/multi_sudden_tmp_change_±10°C.csv")        
+        Global_ATCw = 365*sudden_Tmean_change_csv ['ATCw_count']/sudden_Tmean_change_csv ['obs_count']
+        Global_ATCc = 365*sudden_Tmean_change_csv ['ATCc_count']/sudden_Tmean_change_csv ['obs_count']
+        NH_ATCw = 365*sudden_Tmean_change_csv ['ATCw_Northern']/sudden_Tmean_change_csv ['obs_count_Northern']
+        NH_ATCc = 365*sudden_Tmean_change_csv ['ATCc_Northern']/sudden_Tmean_change_csv ['obs_count_Northern']
+        SH_ATCw = 365*sudden_Tmean_change_csv ['ATCw_Southern']/sudden_Tmean_change_csv ['obs_count_Southern']
+        SH_ATCc = 365*sudden_Tmean_change_csv ['ATCc_Southern']/sudden_Tmean_change_csv ['obs_count_Southern']
+               
         #cal trend 
         Global_ATCw_slope, Global_ATCw_pValue, = mk.original_test(Global_ATCw).slope, mk.original_test(Global_ATCw).p,
         Global_ATCc_slope, Global_ATCc_pValue, = mk.original_test(Global_ATCc).slope, mk.original_test(Global_ATCc).p,
@@ -185,28 +219,19 @@ for i, model in enumerate(models):
         Southern_ATCw_slope, Southern_ATCw_pValue, = mk.original_test(SH_ATCw).slope, mk.original_test(SH_ATCw).p,
         Southern_ATCc_slope, Southern_ATCc_pValue, = mk.original_test(SH_ATCc).slope, mk.original_test(SH_ATCc).p,
         
-        Global_ATCw_slope=Global_ATCw_slope if Global_ATCw_pValue < 0.05 else 0
-        Global_ATCc_slope=Global_ATCc_slope if Global_ATCc_pValue < 0.05 else 0
-        Northern_ATCw_slope=Northern_ATCw_slope if Northern_ATCw_pValue < 0.05 else 0
-        Northern_ATCc_slope=Northern_ATCc_slope if Northern_ATCc_pValue < 0.05 else 0
-        Southern_ATCw_slope=Southern_ATCw_slope if Southern_ATCw_pValue < 0.05 else 0
-        Southern_ATCc_slope=Southern_ATCc_slope if Southern_ATCc_pValue < 0.05 else 0
+        Global_ATCw_slope=Global_ATCw_slope if Global_ATCw_pValue < 0.05 else np.nan
+        Global_ATCc_slope=Global_ATCc_slope if Global_ATCc_pValue < 0.05 else np.nan
+        Northern_ATCw_slope=Northern_ATCw_slope if Northern_ATCw_pValue < 0.05 else np.nan
+        Northern_ATCc_slope=Northern_ATCc_slope if Northern_ATCc_pValue < 0.05 else np.nan
+        Southern_ATCw_slope=Southern_ATCw_slope if Southern_ATCw_pValue < 0.05 else np.nan
+        Southern_ATCc_slope=Southern_ATCc_slope if Southern_ATCc_pValue < 0.05 else np.nan
         
         bars_Global_ATCw_slope.append(Global_ATCw_slope)
         bars_Global_ATCc_slope.append(Global_ATCc_slope)
         bars_Northern_ATCw_slope.append(Northern_ATCw_slope)
         bars_Northern_ATCc_slope.append(Northern_ATCc_slope)
         bars_Southern_ATCw_slope.append(Southern_ATCw_slope)
-        bars_Southern_ATCc_slope.append(Southern_ATCc_slope)               
-        
-    elif model=='ISD':
-        sudden_Tmean_change_csv = pd.read_csv("/data1/zxy/sudden_temp_change/ISD-global-daily/multi-threshold/multi_sudden_tmp_change_±10°C.csv")        
-        Global_ATCw = 365*sudden_Tmean_change_csv ['ATCw_count_global']/sudden_Tmean_change_csv ['obs_count_global']
-        Global_ATCc = 365*sudden_Tmean_change_csv ['ATCc_count_global']/sudden_Tmean_change_csv ['obs_count_global']
-        NH_ATCw = 365*sudden_Tmean_change_csv ['ATCw_count_Northern']/sudden_Tmean_change_csv ['obs_count_Northern']
-        NH_ATCc = 365*sudden_Tmean_change_csv ['ATCc_count_Northern']/sudden_Tmean_change_csv ['obs_count_Northern']
-        SH_ATCw = 365*sudden_Tmean_change_csv ['ATCw_count_Southern']/sudden_Tmean_change_csv ['obs_count_Southern']
-        SH_ATCc = 365*sudden_Tmean_change_csv ['ATCc_count_Southern']/sudden_Tmean_change_csv ['obs_count_Southern']
+        bars_Southern_ATCc_slope.append(Southern_ATCc_slope)    
         
         size=3        
         Global_ATCw = uniform_filter1d(Global_ATCw, size=size, mode='reflect')
@@ -222,29 +247,7 @@ for i, model in enumerate(models):
         sns.lineplot(x=years, y=NH_ATCw, ax=axes[1,0], label='NH ATCw',color=colors[0], zorder=1)
         sns.lineplot(x=years, y=NH_ATCc, ax=axes[1,1], label='NH ATCc',color=colors[0], zorder=1)               
         sns.lineplot(x=years, y=SH_ATCw, ax=axes[2,0], label='SH ATCw',color=colors[0], zorder=1)
-        sns.lineplot(x=years, y=SH_ATCc, ax=axes[2,1], label='SH ATCc',color=colors[0], zorder=1) 
-        
-        #cal trend 
-        Global_ATCw_slope, Global_ATCw_pValue, = mk.original_test(Global_ATCw).slope, mk.original_test(Global_ATCw).p,
-        Global_ATCc_slope, Global_ATCc_pValue, = mk.original_test(Global_ATCc).slope, mk.original_test(Global_ATCc).p,
-        Northern_ATCw_slope, Northern_ATCw_pValue, = mk.original_test(NH_ATCw).slope, mk.original_test(NH_ATCw).p,
-        Northern_ATCc_slope, Northern_ATCc_pValue, = mk.original_test(NH_ATCc).slope, mk.original_test(NH_ATCc).p,
-        Southern_ATCw_slope, Southern_ATCw_pValue, = mk.original_test(SH_ATCw).slope, mk.original_test(SH_ATCw).p,
-        Southern_ATCc_slope, Southern_ATCc_pValue, = mk.original_test(SH_ATCc).slope, mk.original_test(SH_ATCc).p,
-        
-        Global_ATCw_slope=Global_ATCw_slope if Global_ATCw_pValue < 0.05 else 0
-        Global_ATCc_slope=Global_ATCc_slope if Global_ATCc_pValue < 0.05 else 0
-        Northern_ATCw_slope=Northern_ATCw_slope if Northern_ATCw_pValue < 0.05 else 0
-        Northern_ATCc_slope=Northern_ATCc_slope if Northern_ATCc_pValue < 0.05 else 0
-        Southern_ATCw_slope=Southern_ATCw_slope if Southern_ATCw_pValue < 0.05 else 0
-        Southern_ATCc_slope=Southern_ATCc_slope if Southern_ATCc_pValue < 0.05 else 0
-        
-        bars_Global_ATCw_slope.append(Global_ATCw_slope)
-        bars_Global_ATCc_slope.append(Global_ATCc_slope)
-        bars_Northern_ATCw_slope.append(Northern_ATCw_slope)
-        bars_Northern_ATCc_slope.append(Northern_ATCc_slope)
-        bars_Southern_ATCw_slope.append(Southern_ATCw_slope)
-        bars_Southern_ATCc_slope.append(Southern_ATCc_slope)                               
+        sns.lineplot(x=years, y=SH_ATCc, ax=axes[2,1], label='SH ATCc',color=colors[0], zorder=1)                                   
 
     else:
         years = np.arange(1970, 2015)
@@ -257,12 +260,12 @@ for i, model in enumerate(models):
         mean_CMIP6_SH_ATCc,std_CMIP6_SH_ATCc,min_CMIP6_SH_ATCc,max_CMIP6_SH_ATCc = Stats(CMIP6_SH_ATCc) 
 
         size=3        
-        Global_ATCw = uniform_filter1d(Global_ATCw, size=size, mode='reflect')
-        Global_ATCc = uniform_filter1d(Global_ATCc, size=size, mode='reflect')
-        NH_ATCw = uniform_filter1d(NH_ATCw, size=size, mode='reflect')
-        NH_ATCc = uniform_filter1d(NH_ATCc, size=size, mode='reflect')
-        SH_ATCw = uniform_filter1d(SH_ATCw, size=size, mode='reflect')
-        SH_ATCc = uniform_filter1d(SH_ATCc, size=size, mode='reflect')        
+        mean_CMIP6_Global_ATCw = uniform_filter1d(mean_CMIP6_Global_ATCw, size=size, mode='reflect')
+        mean_CMIP6_Global_ATCc = uniform_filter1d(mean_CMIP6_Global_ATCc, size=size, mode='reflect')
+        mean_CMIP6_NH_ATCw = uniform_filter1d(mean_CMIP6_NH_ATCw, size=size, mode='reflect')
+        mean_CMIP6_NH_ATCc = uniform_filter1d(mean_CMIP6_NH_ATCc, size=size, mode='reflect')
+        mean_CMIP6_SH_ATCw = uniform_filter1d(mean_CMIP6_SH_ATCw, size=size, mode='reflect')
+        mean_CMIP6_SH_ATCc = uniform_filter1d(mean_CMIP6_SH_ATCc, size=size, mode='reflect')        
         
         sns.lineplot(x=years, y=mean_CMIP6_Global_ATCw, ax=axes[0,0], label='global ATCw',color=colors[3], zorder=2)
         sns.lineplot(x=years, y=mean_CMIP6_Global_ATCc, ax=axes[0,1], label='global ATCc',color=colors[3], zorder=2)
@@ -311,17 +314,17 @@ error_bars_Southern_ATCc_slope=[np.nan,np.nan,np.nan,np.nanstd(Southern_ATCc_slo
 
 print('global ATCw', bars_Global_ATCw_slope)
 print('global ATCc', bars_Global_ATCc_slope)
-print('Northern ATCc', bars_Northern_ATCw_slope)
+print('Northern ATCw', bars_Northern_ATCw_slope)
 print('Northern ATCc', bars_Northern_ATCc_slope)
-print('Southern ATCc', bars_Southern_ATCw_slope)
+print('Southern ATCw', bars_Southern_ATCw_slope)
 print('Southern ATCc', bars_Southern_ATCc_slope)
 
 
 print('error_global ATCw', error_bars_Global_ATCw_slope)
 print('error_global ATCc', error_bars_Global_ATCc_slope)
-print('error_Northern ATCc', error_bars_Northern_ATCw_slope)
+print('error_Northern ATCw', error_bars_Northern_ATCw_slope)
 print('error_Northern ATCc', error_bars_Northern_ATCc_slope)
-print('error_Southern ATCc', error_bars_Southern_ATCw_slope)
+print('error_Southern ATCw', error_bars_Southern_ATCw_slope)
 print('error_Southern ATCc', error_bars_Southern_ATCc_slope)
 
 #barchart

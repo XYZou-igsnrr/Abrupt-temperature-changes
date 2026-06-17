@@ -4,8 +4,30 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import netCDF4 as nc
+import warnings
+warnings.filterwarnings('ignore', category=RuntimeWarning)
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
+
+
+def weighted_nanstd(data, weights, lat_cond):
+    mask = lat_cond
+    d = data[mask, :].flatten()
+    w = weights[mask, :].flatten()
+
+    valid = ~(np.isnan(d) | np.isnan(w))# 同时剔除 data 和 weight 中任一为 NaN 的位置
+    d, w = d[valid], w[valid]
+
+    mean = np.average(d, weights=w)
+    return np.sqrt(np.average((d - mean)**2, weights=w))
+
+def weighted_nanmean(data, weights, lat_cond):
+    mask = lat_cond
+    d = data[mask, :].flatten()
+    w = weights[mask, :].flatten()
+    valid = ~(np.isnan(d) | np.isnan(w))
+    d, w = d[valid], w[valid]
+    return np.average(d, weights=w)
 
 models=['CRUJRA', 'ERA5', 'ACCESS-ESM1-5','AWI-CM-1-1-MR','BCC-CSM2-MR','CanESM5','CESM2-WACCM','CMCC-ESM2','E3SM-1-0','EC-Earth3','FGOALS-g3','GFDL-ESM4',
         'IITM-ESM','INM-CM5-0','IPSL-CM6A','KACE-1-0-G','KIOST-ESM','MIROC6','MPI-ESM1-2-HR','NESM3','NorESM2','TaiESM1',]
@@ -26,6 +48,9 @@ for i, model in enumerate(models):
         ATCc_slope[ATCc_pvalue > 0.05] = 0
         ATCw_slope[ATCw_pvalue == 1] = np.nan
         ATCc_slope[ATCc_pvalue == 1] = np.nan
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_area.nc")
+        area_weight=data_area['cell_area'][:]
+
 
     elif model=='ERA5':
         dataset = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_ATC_trend_1970_2020_mk.nc")
@@ -39,6 +64,9 @@ for i, model in enumerate(models):
         ATCw_slope[ATCw_pvalue == 1] = np.nan
         ATCc_slope[ATCc_pvalue == 1] = np.nan
 
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_area.nc")
+        area_weight=data_area['cell_area'][:]
+
     else:
         dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/"+str(model)+"/T_change_freq_"+str(model)+"_yearly_1970-2015_mk.nc")
 
@@ -50,6 +78,9 @@ for i, model in enumerate(models):
         ATCw_slope[ATCw_pvalue > 0.05] = 0
         ATCc_slope[ATCc_pvalue > 0.05] = 0
 
+        data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/"+str(model)+"/"+str(model)+"_area.nc")
+        area_weight=data_area['cell_area'][:]
+
     if 'latitude' in dataset.variables:
         lat = dataset['latitude'][:]
         lon = dataset['longitude'][:]
@@ -57,16 +88,22 @@ for i, model in enumerate(models):
         lat = dataset['lat'][:]
         lon = dataset['lon'][:]
 
+#    ATCw_slope_global=np.nanmean(ATCw_slope[lat>-60,:])
+#    ATCw_slope_NH=np.nanmean(ATCw_slope[lat>0,:])
+#    ATCw_slope_SH=np.nanmean(ATCw_slope[(lat<0)&(lat>-60),:])
+#
+#    ATCc_slope_global=np.nanmean(ATCc_slope[lat>-60,:])
+#    ATCc_slope_NH=np.nanmean(ATCc_slope[lat>0,:])
+#    ATCc_slope_SH=np.nanmean(ATCc_slope[(lat<0)&(lat>-60),:])
 
+    ATCw_slope_global = weighted_nanmean(ATCw_slope, area_weight, lat > -60)
+    ATCw_slope_NH     = weighted_nanmean(ATCw_slope, area_weight, lat > 0)
+    ATCw_slope_SH     = weighted_nanmean(ATCw_slope, area_weight, (lat < 0) & (lat > -60))
 
-    ATCw_slope_global=np.nanmean(ATCw_slope[lat>-60,:])
-    ATCw_slope_NH=np.nanmean(ATCw_slope[lat>0,:])
-    ATCw_slope_SH=np.nanmean(ATCw_slope[(lat<0)&(lat>-60),:])
+    ATCc_slope_global = weighted_nanmean(ATCc_slope, area_weight, lat > -60)
+    ATCc_slope_NH     = weighted_nanmean(ATCc_slope, area_weight, lat > 0)
+    ATCc_slope_SH     = weighted_nanmean(ATCc_slope, area_weight, (lat > -60) & (lat < 0))
 
-    ATCc_slope_global=np.nanmean(ATCc_slope[lat>-60,:])
-    ATCc_slope_NH=np.nanmean(ATCc_slope[lat>0,:])
-    ATCc_slope_SH=np.nanmean(ATCc_slope[(lat<0)&(lat>-60),:])
-    
 
     all_data.extend([
             {'Model': model, 'Region': 'Globe', 'ATC_Type': 'ATCw', 'Value': ATCw_slope_global},
