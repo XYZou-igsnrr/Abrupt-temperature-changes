@@ -1,63 +1,5 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-"""
-Created on Sun Dec 16 17:58:52 2018
-%% LFCA  Truncated Low-Frequency Component Analysis
-%     [LFCs,LFPs,WEIGHTS,R,PVAR,PCS,EOF,N,PVAR_SLOW,PVAR_LFC,R_EOFS,PVAR_SLOW_EOFS] = lfca(X,CUTOFF,TRUNCATION,SCALE,COVTOT)
-%     performs low-frequency component analysis (LFCA) on the data in
-%     matrix X based on a the ratio of low-pass filtered to unfiltered
-%     variance, with a low-pass filter defined by CUTOFF (in # timesteps).
-%     Another type of filter can be substituted for the Lanczos lowpass
-%     filter in the code below.
-
-%% INPUT
-%     X is a 2D data matrix with time variantions along the first dimension
-%     and spatial variations along the second dimension
-%
-%     CUTOFF is the lowpass cutoff for the LFCA in number of timesteps
-%
-%     TRUNCATION is the number of principal components / EOFs to include in
-%     the LFCA
-%
-%     SCALE (optional) a scale vector, which for geospatial data should be
-%     equal to the square root of grid cell area. The default value is one
-%     for all grid points.
-%
-%     COVTOT (optional) the covariance matrix associated with the data in
-%     X. If not specified, COVTOT will be computed from X.
-
-%% OUTPUT
-
-%     WEIGHTS is a matrix containing the canonical weight vectors as
-%     columns. LFPs is a matrix containing the dual vectors of the
-%     canonical weight vectors as rows. These are the so-called low-
-%     frequency patterns (LFPs). R is a vector measuring the ratio of
-%     low-pass filtered to total variance for each low-frequency component
-%
-%     PVAR is the percentage of total sample variation accounted for
-%     by each of the EOFs. PCS is a matrix containing the principal
-%     component time series as columns. EOF is a matrix containing the
-%     EOFs, the principal component patterns, as rows. The scalar N
-%     is the rank at which the PCA was truncated.
-%
-%     R is a vector containing the ratio of low-frequency to
-%     total variance of each LFC.
-%
-%     PVAR_SLOW is a vector of the low-frequency variance associated with
-%     each LFC as a fraction of the total low-frequency variance. Note that
-%     the LFPs are not orthogonal, so these values need not add to the
-%     total low-frequency variance in the first N principal components.
-%
-%     PVAR_LFC is a vector of the variance associated with
-%     each LFC as a fraction of the total variance. Note that
-%     the LFPs are not orthogonal, so these values need not add to the
-%     total variance in the first N principal components.
-%
-%     R_EOFS, PVAR_SLOW_EOFS, and PVAR are equivalent to R, PVAR_SLOW,
-%     and PVAR_LFC respectively, but for the original EOFs.
-@author: Zhaoyi.Shen
-"""
-
 import sys
 sys.path.append('/data1/zxy/sudden_temp_change/CRU_JAR_tmp/LFCA/')
 from signal_processing import lfca
@@ -68,19 +10,23 @@ from matplotlib import pyplot as plt
 import netCDF4 as nc
 import os
 
-dataset_ref = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/ACCESS-ESM1-5/ACCESS-ESM1-5_splityear_seamask.nc")
+current_directory = os.path.dirname(os.path.abspath(__file__))
+
+model='ACCESS-ESM1-5'
+
+dataset_ref = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_ssp585/"+str(model)+"/"+str(model)+"_splityear_seamask.nc")
 seamask=dataset_ref['topo'][:]
 seamask_lat=dataset_ref['lat'][:]
 seamask=np.transpose(seamask, (1, 0))
 
-dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/ACCESS-ESM1-5/LFCA/ATC_monthly/T_change_freq_monthly_ACCESS-ESM1-5_1850-2014.nc")
-ATCw=dataset["T_change_up_freq"][1476:,:] #1973-2014
-ATCc=dataset["T_change_down_freq"][1476:,:] #1973-2014
-print(ATCw.shape)
+dataset = nc.Dataset(str(current_directory)+"/ATC_monthly/T_change_freq_monthly_"+str(model)+"_1970-2100.nc")
+ATCw=dataset["T_change_up_freq"][:] #1970-2100
+ATCc=dataset["T_change_down_freq"][:] #1970-2100
+print(ATCw.shape,"ATCw.shape")
 sys.stdout.flush()
 ATCw = np.transpose(ATCw, (2, 1, 0))
 ATCc = np.transpose(ATCc, (2, 1, 0))
-print(ATCw.shape)
+print(ATCw.shape,"ATCw.shape")
 sys.stdout.flush()
 lat_axis = dataset['lat'][:]
 lon_axis = dataset['lon'][:]
@@ -230,7 +176,7 @@ ATCc_pattern=ATCc_pattern.transpose(0, 2, 1)
 #=====================================write nc file====================================================#
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
-new = nc.Dataset(str(current_directory)+"/LFCA_result_ACCESS-ESM1-5_1973_2014_monthly.nc", 'w')
+new = nc.Dataset(str(current_directory)+"/LFCA_result_"+str(model)+"_1970_2100_monthly.nc", 'w')
 
 new.createDimension("lat", nlat)
 new.createDimension("lon", nlon)

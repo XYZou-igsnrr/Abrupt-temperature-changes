@@ -6,11 +6,12 @@ import sys
 from scipy.stats import linregress
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
+model='ACCESS-ESM1-5'
 
 def process_nc_file(year):
     print(str(year)+'star')
     sys.stdout.flush()
-    dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/ACCESS-ESM1-5/ACCESS-ESM1-5_splityear_"+str(year)+".nc")
+    dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_ssp585/"+str(model)+"/"+str(model)+"_splityear_"+str(year)+".nc")
     tmp = dataset['tas'][:]
     lon_dim = dataset.dimensions['lon'].size
     lat_dim = dataset.dimensions['lat'].size
@@ -31,7 +32,7 @@ def process_nc_file(year):
 
 if __name__ == "__main__":
     
-    year = list(range(1850,2015))
+    year = list(range(1970,2100))
 
     #num_processes = min(len(nc_files), multiprocessing.cpu_count()) 
     
@@ -45,7 +46,7 @@ if __name__ == "__main__":
     pool.close()
     pool.join()
        
-    dataset_ref = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/ACCESS-ESM1-5/ACCESS-ESM1-5_splityear_1850.nc")
+    dataset_ref = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_ssp585/"+str(model)+"/"+str(model)+"_splityear_1850.nc")
     tmp=dataset_ref['tas'][0,:]
     tmp_mask=tmp.mask
     lon_dim = dataset_ref.dimensions['lon'].size
@@ -59,11 +60,11 @@ if __name__ == "__main__":
     T_change_up_freq_dataset=np.ma.masked_where(tmp_mask,T_change_up_freq_dataset)
     T_change_down_freq_dataset=np.ma.masked_where(tmp_mask,T_change_down_freq_dataset)
     
-    new = nc.Dataset(str(current_directory)+"/T_change_freq_ACCESS-ESM1-5_yearly.nc", 'w')
+    new = nc.Dataset(str(current_directory)+"/T_change_freq_"+str(model)+"_yearly_1970-2100.nc", 'w')
 
     new.createDimension("lat", lat_dim)
     new.createDimension("lon", lon_dim)
-    new.createDimension("time", 165)
+    new.createDimension("time", len(year))
 
     new.createVariable("lat", "float64", ("lat",))
     new.createVariable("lon", "float64", ("lon",))    

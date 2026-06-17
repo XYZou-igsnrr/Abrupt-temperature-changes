@@ -81,7 +81,7 @@ def process_nc_file(year):
 #    sys.stdout.flush()
     
     year_index = year
-    return (year_index,np.nanmean(sudden_tmp_change_up_10,axis=0)*area_weight,np.nanmean(sudden_tmp_change_down_10,axis=0)*area_weight)
+    return (year_index,np.nanmean(sudden_tmp_change_up_10,axis=0),np.nanmean(sudden_tmp_change_down_10,axis=0))
 
 
 if __name__ == "__main__":
