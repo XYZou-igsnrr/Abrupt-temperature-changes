@@ -54,9 +54,9 @@ def process_nc_file(year):
     dataset = nc.Dataset("/data4/share/CRUJRA/v2.2/crujra.v2.2.5d.tmp."+str(year)+".365d.noc.nc")
     tmp = dataset['tmp'][:]
 
-    data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_area.nc")
-    area=data_area['cell_area'][:]
-    area_weight=area/np.nanmean(area)
+#    data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_area.nc")
+#    area=data_area['cell_area'][:]
+#    area_weight=area/np.nanmean(area)
     
     tmp_change = np.ma.masked_array(np.zeros((1456, 360, 720), dtype=np.float16))
     for time in range(0, 1456):
@@ -69,7 +69,7 @@ def process_nc_file(year):
 #    sys.stdout.flush()
     
     year_index = year
-    return (year_index,np.nanmean(sudden_tmp_change_up_10,axis=0)*area_weight,np.nanmean(sudden_tmp_change_down_10,axis=0)*area_weight)
+    return (year_index,np.nanmean(sudden_tmp_change_up_10,axis=0),np.nanmean(sudden_tmp_change_down_10,axis=0))
 
 
 if __name__ == "__main__":

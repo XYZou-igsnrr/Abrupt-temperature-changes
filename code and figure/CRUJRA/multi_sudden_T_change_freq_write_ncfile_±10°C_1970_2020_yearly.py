@@ -20,15 +20,15 @@ def process_nc_file(year):
     sudden_tmp_change_up_10 = np.ma.masked_where(tmp_change.mask, np.where(tmp_change > 10, 1, 0))
     sudden_tmp_change_down_10 = np.ma.masked_where(tmp_change.mask, np.where(tmp_change < -10, 1, 0))
 
-    data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_area.nc")
-    area=data_area['cell_area'][:]
-    area_weight=area/np.nanmean(area)
+#    data_area = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_area.nc")
+#    area=data_area['cell_area'][:]
+#    area_weight=area/np.nanmean(area)
     
 #    print(str(year)+'finish')
 #    sys.stdout.flush()
     
     year_index = year
-    return (year_index,np.nanmean(sudden_tmp_change_up_10,axis=0)*area_weight,np.nanmean(sudden_tmp_change_down_10,axis=0)*area_weight)
+    return (year_index,np.nanmean(sudden_tmp_change_up_10,axis=0),np.nanmean(sudden_tmp_change_down_10,axis=0))
 
 
 if __name__ == "__main__":
