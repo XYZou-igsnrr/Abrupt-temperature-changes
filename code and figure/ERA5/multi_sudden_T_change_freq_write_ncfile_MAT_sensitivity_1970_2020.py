@@ -19,7 +19,8 @@ def cal_trends(freq_data,MAT_data,lat_len,lon_len):
     result_r_value=np.zeros((lat_len, lon_len))
     result_p_value=np.zeros((lat_len, lon_len))
     for lat in range(lat_len):
-#        print(lat)
+        print(lat)
+        sys.stdout.flush()
         for lon in range(lon_len):
             x_values = MAT_data[:, lat, lon]
             y_values = freq_data[:, lat, lon]
@@ -42,9 +43,9 @@ def process_nc_file(year):
     lon_len =len(dataset.dimensions['longitude'])
     lat=dataset['latitude'][:]
 
-    data_area = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_area.nc")
-    area=data_area['cell_area'][:]
-    area_weight=area/np.nanmean(area)
+#    data_area = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_area.nc")
+#    area=data_area['cell_area'][:]
+#    area_weight=area/np.nanmean(area)
 
     tmp_change = np.ma.masked_array(np.zeros((time_len, lat_len, lon_len)))
     for time in range(0, time_len-1):
@@ -57,7 +58,7 @@ def process_nc_file(year):
     print(str(year)+'finish')
     sys.stdout.flush()
     
-    return (year,np.nanmean(sudden_tmp_change_up_10,axis=0)*area_weight,np.nanmean(sudden_tmp_change_down_10,axis=0)*area_weight,sudden_tmp_change_MAT)
+    return (year,np.nanmean(sudden_tmp_change_up_10,axis=0),np.nanmean(sudden_tmp_change_down_10,axis=0),sudden_tmp_change_MAT)
 
 
 if __name__ == "__main__":

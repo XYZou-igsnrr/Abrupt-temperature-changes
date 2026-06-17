@@ -9,7 +9,7 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 model='ERA5'
 
 def process_nc_file(year):
-    print(str(year)+'star')
+    #print(str(year)+'star')
     sys.stdout.flush()
     dataset = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_t2m_daily/"+str(model)+"_t2m_"+str(year)+"_daily.nc")
     tmp = dataset['t2m'][:]
@@ -23,9 +23,9 @@ def process_nc_file(year):
     sudden_tmp_change_up_10 = np.ma.masked_where(tmp_change.mask, np.where(tmp_change > 10, 1, 0))
     sudden_tmp_change_down_10 = np.ma.masked_where(tmp_change.mask, np.where(tmp_change < -10, 1, 0))
 
-    data_area = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_area.nc")
-    area=data_area['cell_area'][:]
-    area_weight=area/np.nanmean(area)
+#    data_area = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_area.nc")
+#    area=data_area['cell_area'][:]
+#    area_weight=area/np.nanmean(area)
     
     print(str(year)+'finish')
     sys.stdout.flush()
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     #num_processes = min(len(nc_files), multiprocessing.cpu_count()) 
     
     #Number of processes
-    num_processes=5
+    num_processes=4
     pool = multiprocessing.Pool(processes=num_processes)
     print("process star")
     sys.stdout.flush() 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     T_change_up_freq_dataset=np.ma.masked_where(tmp_mask,T_change_up_freq_dataset)
     T_change_down_freq_dataset=np.ma.masked_where(tmp_mask,T_change_down_freq_dataset)
     
-    new = nc.Dataset(str(current_directory)+"/T_change_freq_"+str(model)+"_yearly_1970-2020_area.nc", 'w')
+    new = nc.Dataset(str(current_directory)+"/T_change_freq_"+str(model)+"_yearly_1970-2020.nc", 'w')
 
     new.createDimension("lat", lat_dim)
     new.createDimension("lon", lon_dim)

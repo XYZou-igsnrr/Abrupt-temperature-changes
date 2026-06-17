@@ -83,15 +83,15 @@ def process_nc_file(year):
     sudden_tmp_change_up_10 = np.ma.masked_where(tmp_change.mask, np.where(tmp_change > 10, 1, 0))
     sudden_tmp_change_down_10 = np.ma.masked_where(tmp_change.mask, np.where(tmp_change < -10, 1, 0))
     
-    data_area = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_area.nc")
-    area=data_area['cell_area'][:]
-    area_weight=area/np.nanmean(area)
+#    data_area = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_area.nc")
+#    area=data_area['cell_area'][:]
+#    area_weight=area/np.nanmean(area)
 
     for month in range(0,12):
         tmp_change_monthly_up[month, :]=np.ma.masked_where(tmp_change[0,:].mask, np.nanmean(sudden_tmp_change_up_10[month_day[month],:],axis=0))
         tmp_change_monthly_down[month, :]=np.ma.masked_where(tmp_change[0,:].mask, np.nanmean(sudden_tmp_change_down_10[month_day[month],:],axis=0))
 
-    write_nc_file(tmp_change_monthly_up*area_weight,tmp_change_monthly_down*area_weight,year)
+    write_nc_file(tmp_change_monthly_up,tmp_change_monthly_down,year)
     
 #    print(str(year)+'finish')
 #    sys.stdout.flush()
