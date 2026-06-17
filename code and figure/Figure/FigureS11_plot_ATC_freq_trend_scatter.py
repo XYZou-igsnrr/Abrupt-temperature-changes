@@ -33,11 +33,11 @@ for i, model in enumerate(models):
     print(model)
     if model=='CRUJRA':
         dataset_ave   = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_sudden_T_change_freq_1970_2020.nc")
-        ATCw_ave      = dataset_ave['T_change_up_freq'][:]*365
-        ATCc_ave      = dataset_ave['T_change_down_freq'][:]*365
+        ATCw_ave      = dataset_ave['T_change_up_freq'][:]*364
+        ATCc_ave      = dataset_ave['T_change_down_freq'][:]*364
         dataset_slope = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_sudden_T_change_freq_trend_±10°C_1970_2020.nc")
-        ATCw_slope    = dataset_slope['T_change_up_freq_trend_slope'][:]*365
-        ATCc_slope    = dataset_slope['T_change_down_freq_trend_slope'][:]*365
+        ATCw_slope    = dataset_slope['T_change_up_freq_trend_slope'][:]*364
+        ATCc_slope    = dataset_slope['T_change_down_freq_trend_slope'][:]*364
         ATCw_pvalue   = dataset_slope['T_change_up_freq_trend_p_value'][:]
         ATCc_pvalue   = dataset_slope['T_change_down_freq_trend_p_value'][:]
         if 'latitude' in dataset.variables:
@@ -49,10 +49,10 @@ for i, model in enumerate(models):
 
     elif model=='ERA5':
         dataset   = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_sudden_T_change_freq_1970_2020.nc")
-        ATCw_ave      = dataset['T_change_up_freq'][:]*365
-        ATCc_ave      = dataset['T_change_down_freq'][:]*365
-        ATCw_slope    = dataset['T_change_up_freq_trend_slpoe'][:]*365
-        ATCc_slope    = dataset['T_change_down_freq_trend_slpoe'][:]*365
+        ATCw_ave      = dataset['T_change_up_freq'][:]*364
+        ATCc_ave      = dataset['T_change_down_freq'][:]*364
+        ATCw_slope    = dataset['T_change_up_freq_trend_slpoe'][:]*364
+        ATCc_slope    = dataset['T_change_down_freq_trend_slpoe'][:]*364
         ATCw_pvalue   = dataset['T_change_up_freq_trend_p_value'][:]
         ATCc_pvalue   = dataset['T_change_down_freq_trend_p_value'][:]
 
@@ -65,10 +65,10 @@ for i, model in enumerate(models):
 
     else:
         dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/"+str(model)+"/T_change_freq_"+str(model)+"_yearly_1970-2015-rescale.nc")
-        ATCw_ave    = dataset['T_change_up_freq'][:]*365
-        ATCc_ave    = dataset['T_change_down_freq'][:]*365
-        ATCw_slope    = dataset['T_change_up_freq_trend_slpoe'][:]*365
-        ATCc_slope    = dataset['T_change_down_freq_trend_slpoe'][:]*365
+        ATCw_ave    = dataset['T_change_up_freq'][:]*364
+        ATCc_ave    = dataset['T_change_down_freq'][:]*364
+        ATCw_slope    = dataset['T_change_up_freq_trend_slpoe'][:]*364
+        ATCc_slope    = dataset['T_change_down_freq_trend_slpoe'][:]*364
         ATCw_pvalue   = dataset['T_change_up_freq_trend_p_value'][:]
         ATCc_pvalue   = dataset['T_change_down_freq_trend_p_value'][:]
         ATCw_ave=np.nanmean(ATCw_ave,axis=0)

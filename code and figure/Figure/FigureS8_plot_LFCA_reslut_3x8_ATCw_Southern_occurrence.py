@@ -73,7 +73,7 @@ for i, model in enumerate(models):
         light='lightgray'
         black='black'
         zorder=1
-    lfps_up = dataset['lfps_up'][0,:]*365
+    lfps_up = dataset['lfps_up'][0,:]*364
     lfcs_up = dataset['lfcs_up'][0,:]
     lfps_up = lfps_up*(np.nanmean(lfcs_up[-120:])-np.nanmean(lfcs_up[:120])) / ((len(lfcs_up)-120) /12)
     print(len(lfcs_up))

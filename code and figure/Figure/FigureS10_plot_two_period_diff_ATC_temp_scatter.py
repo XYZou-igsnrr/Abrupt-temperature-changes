@@ -42,14 +42,14 @@ for i, model in enumerate(models):
         year = 40
    
          
-    Global_ATCw_diff   = dataset.getncattr('Global ATCw frequency two period diff')*365/year
-    Northern_ATCw_diff = dataset.getncattr('Northern ATCw frequency two period diff')*365/year
-    Southern_ATCw_diff = dataset.getncattr('Southern ATCw frequency two period diff')*365/year
+    Global_ATCw_diff   = dataset.getncattr('Global ATCw frequency two period diff')*364/year
+    Northern_ATCw_diff = dataset.getncattr('Northern ATCw frequency two period diff')*364/year
+    Southern_ATCw_diff = dataset.getncattr('Southern ATCw frequency two period diff')*364/year
     print(Global_ATCw_diff)
     
-    Global_ATCc_diff   = dataset.getncattr('Global ATCc frequency two period diff')*365/year
-    Northern_ATCc_diff = dataset.getncattr('Northern ATCc frequency two period diff')*365/year
-    Southern_ATCc_diff = dataset.getncattr('Southern ATCc frequency two period diff')*365/year
+    Global_ATCc_diff   = dataset.getncattr('Global ATCc frequency two period diff')*364/year
+    Northern_ATCc_diff = dataset.getncattr('Northern ATCc frequency two period diff')*364/year
+    Southern_ATCc_diff = dataset.getncattr('Southern ATCc frequency two period diff')*364/year
     
     Global_temp_diff    = dataset.getncattr('Global Temp yearly two period diff')*10/year
     Northern_temp_diff  = dataset.getncattr('Northern Temp yearly two period diff')*10/year
@@ -79,13 +79,13 @@ for i, model in enumerate(models):
         year=85
     
 
-    Global_ATCw_diff_ssp585   = dataset.getncattr('Global ATCw frequency two period diff')*365/year
-    Northern_ATCw_diff_ssp585 = dataset.getncattr('Northern ATCw frequency two period diff')*365/year
-    Southern_ATCw_diff_ssp585 = dataset.getncattr('Southern ATCw frequency two period diff')*365/year
+    Global_ATCw_diff_ssp585   = dataset.getncattr('Global ATCw frequency two period diff')*364/year
+    Northern_ATCw_diff_ssp585 = dataset.getncattr('Northern ATCw frequency two period diff')*364/year
+    Southern_ATCw_diff_ssp585 = dataset.getncattr('Southern ATCw frequency two period diff')*364/year
     
-    Global_ATCc_diff_ssp585   = dataset.getncattr('Global ATCc frequency two period diff')*365/year
-    Northern_ATCc_diff_ssp585 = dataset.getncattr('Northern ATCc frequency two period diff')*365/year
-    Southern_ATCc_diff_ssp585 = dataset.getncattr('Southern ATCc frequency two period diff')*365/year
+    Global_ATCc_diff_ssp585   = dataset.getncattr('Global ATCc frequency two period diff')*364/year
+    Northern_ATCc_diff_ssp585 = dataset.getncattr('Northern ATCc frequency two period diff')*364/year
+    Southern_ATCc_diff_ssp585 = dataset.getncattr('Southern ATCc frequency two period diff')*364/year
     
     Global_temp_diff_ssp585    = dataset.getncattr('Global Temp yearly two period diff')*10/year
     Northern_temp_diff_ssp585  = dataset.getncattr('Northern Temp yearly two period diff')*10/year

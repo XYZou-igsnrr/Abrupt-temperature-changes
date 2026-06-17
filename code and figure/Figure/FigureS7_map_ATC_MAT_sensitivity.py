@@ -71,8 +71,8 @@ CRUJRA_dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_su
 
 CRUJRA_ATCw_pvalue=CRUJRA_dataset['T_change_up_freq_trend_p_value'][:]
 CRUJRA_ATCc_pvalue=CRUJRA_dataset['T_change_down_freq_trend_p_value'][:]
-CRUJRA_ATCw_slope=CRUJRA_dataset['T_change_up_freq_trend_slpoe'][:]*365
-CRUJRA_ATCc_slope=CRUJRA_dataset['T_change_down_freq_trend_slpoe'][:]*365
+CRUJRA_ATCw_slope=CRUJRA_dataset['T_change_up_freq_trend_slpoe'][:]*364
+CRUJRA_ATCc_slope=CRUJRA_dataset['T_change_down_freq_trend_slpoe'][:]*364
 lat=CRUJRA_dataset['lat'][:]
 
 dataset_ref = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_sudden_T_change_freq_1970_2020.nc")
@@ -92,8 +92,8 @@ ERA5_dataset = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_sudden_T_
 
 ERA5_ATCw_pvalue=ERA5_dataset['T_change_up_freq_trend_p_value'][:]
 ERA5_ATCc_pvalue=ERA5_dataset['T_change_down_freq_trend_p_value'][:]
-ERA5_ATCw_slope=ERA5_dataset['T_change_up_freq_trend_slpoe'][:]*365
-ERA5_ATCc_slope=ERA5_dataset['T_change_down_freq_trend_slpoe'][:]*365
+ERA5_ATCw_slope=ERA5_dataset['T_change_up_freq_trend_slpoe'][:]*364
+ERA5_ATCc_slope=ERA5_dataset['T_change_down_freq_trend_slpoe'][:]*364
 
 
 #==========================================load CMIP6 data===========================================#
@@ -123,8 +123,8 @@ for i, model in enumerate(models):
         lat = dataset['lat'][:]
         lon = dataset['lon'][:]
     
-    ATCw_slope_CMIP6.append(dataset['T_change_up_freq_trend_slpoe'][:]*365)
-    ATCc_slope_CMIP6.append(dataset['T_change_down_freq_trend_slpoe'][:]*365)
+    ATCw_slope_CMIP6.append(dataset['T_change_up_freq_trend_slpoe'][:]*364)
+    ATCc_slope_CMIP6.append(dataset['T_change_down_freq_trend_slpoe'][:]*364)
     ATCw_pvalue_CMIP6.append(dataset['T_change_up_freq_trend_p_value'][:])
     ATCc_pvalue_CMIP6.append(dataset['T_change_down_freq_trend_p_value'][:])    
 

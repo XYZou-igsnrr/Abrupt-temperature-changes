@@ -71,7 +71,7 @@ def aggregate_slopes(slopes, sig_mask):
 CRUJRA_dataset = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/ATC_trend_spatial_±10°C_1970_2020_MK.nc")
 
 CRUJRA_ATC_pvalue=CRUJRA_dataset['ATC_trend_p_value'][:]
-CRUJRA_ATC_slope=CRUJRA_dataset['ATC_trend_slope'][:]*365
+CRUJRA_ATC_slope=CRUJRA_dataset['ATC_trend_slope'][:]*364
 lat=CRUJRA_dataset['lat'][:]
 
 dataset_ref = nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/CRUJRA_sudden_T_change_freq_1970_2020.nc")
@@ -96,7 +96,7 @@ CRUJRA_ATC_frac_d=(np.nanmean(CRUJRA_ATC_frac[-10:,:,:],axis=0)-np.nanmean(CRUJR
 ERA5_dataset = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/ERA5_ATC_trend_1970_2020_mk.nc")
 
 ERA5_ATC_pvalue=ERA5_dataset['ATC_trend_p_value'][:]
-ERA5_ATC_slope=ERA5_dataset['ATC_trend_slope'][:]*365
+ERA5_ATC_slope=ERA5_dataset['ATC_trend_slope'][:]*364
 
 ERA5_dataset = nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/LFCA/T_change_freq_ERA5_yearly_1970-2020.nc")
 
@@ -129,7 +129,7 @@ for i, model in enumerate(models):
         lat = dataset['lat'][:]
         lon = dataset['lon'][:]
     
-    ATC_slope_CMIP6.append(dataset['ATC_trend_slope'][:]*365)
+    ATC_slope_CMIP6.append(dataset['ATC_trend_slope'][:]*364)
     ATC_pvalue_CMIP6.append(dataset['ATC_trend_p_value'][:])
 
     ATCw = np.array(dataset['T_change_up_freq'][:])

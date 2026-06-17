@@ -47,12 +47,12 @@ for i, model in enumerate(models):
 
     if model=='CRUJRA':
         sudden_Tmean_change_csv =pd.read_csv("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/multi-threshold/CRUJRA_multi_sudden_tmp_change_±10°C_1970_2020.csv")
-        Global_ATCw = sudden_Tmean_change_csv ['Global_ATCw']*365
-        Global_ATCc = sudden_Tmean_change_csv ['Global_ATCc']*365
-        NH_ATCw    = sudden_Tmean_change_csv ['Northern_ATCw']*365
-        NH_ATCc    = sudden_Tmean_change_csv ['Northern_ATCc']*365
-        SH_ATCw    = sudden_Tmean_change_csv ['Southern_ATCw']*365
-        SH_ATCc    = sudden_Tmean_change_csv ['Southern_ATCc']*365
+        Global_ATCw = sudden_Tmean_change_csv ['Global_ATCw']*364
+        Global_ATCc = sudden_Tmean_change_csv ['Global_ATCc']*364
+        NH_ATCw    = sudden_Tmean_change_csv ['Northern_ATCw']*364
+        NH_ATCc    = sudden_Tmean_change_csv ['Northern_ATCc']*364
+        SH_ATCw    = sudden_Tmean_change_csv ['Southern_ATCw']*364
+        SH_ATCc    = sudden_Tmean_change_csv ['Southern_ATCc']*364
 
         #cal trend
         Global_ATCw_slope, Global_ATCw_pValue, = mk.original_test(Global_ATCw).slope, mk.original_test(Global_ATCw).p,
@@ -72,12 +72,12 @@ for i, model in enumerate(models):
 
     elif model=='ERA5':
         sudden_Tmean_change_csv = pd.read_csv("/data1/zxy/sudden_temp_change/ERA5_tmp/multi-threshold/ERA5_T_sudden_change_±10°C_1970_2020.csv")
-        Global_ATCw = sudden_Tmean_change_csv ['Global_ATCw']*365
-        Global_ATCc = sudden_Tmean_change_csv ['Global_ATCc']*365
-        NH_ATCw    = sudden_Tmean_change_csv ['Northern_ATCw']*365
-        NH_ATCc    = sudden_Tmean_change_csv ['Northern_ATCc']*365
-        SH_ATCw    = sudden_Tmean_change_csv ['Southern_ATCw']*365
-        SH_ATCc    = sudden_Tmean_change_csv ['Southern_ATCc']*365
+        Global_ATCw = sudden_Tmean_change_csv ['Global_ATCw']*364
+        Global_ATCc = sudden_Tmean_change_csv ['Global_ATCc']*364
+        NH_ATCw    = sudden_Tmean_change_csv ['Northern_ATCw']*364
+        NH_ATCc    = sudden_Tmean_change_csv ['Northern_ATCc']*364
+        SH_ATCw    = sudden_Tmean_change_csv ['Southern_ATCw']*364
+        SH_ATCc    = sudden_Tmean_change_csv ['Southern_ATCc']*364
 
         #cal trend
         Global_ATCw_slope, Global_ATCw_pValue, = mk.original_test(Global_ATCw).slope, mk.original_test(Global_ATCw).p,
@@ -97,12 +97,12 @@ for i, model in enumerate(models):
 
     elif model=='ISD':
         sudden_Tmean_change_csv = pd.read_csv("/data1/zxy/sudden_temp_change/ISD-global-daily/multi-threshold/multi_sudden_tmp_change_±10°C.csv")
-        Global_ATCw = 365*sudden_Tmean_change_csv ['ATCw_count']/sudden_Tmean_change_csv ['obs_count']
-        Global_ATCc = 365*sudden_Tmean_change_csv ['ATCc_count']/sudden_Tmean_change_csv ['obs_count']
-        NH_ATCw = 365*sudden_Tmean_change_csv ['ATCw_Northern']/sudden_Tmean_change_csv ['obs_count_Northern']
-        NH_ATCc = 365*sudden_Tmean_change_csv ['ATCc_Northern']/sudden_Tmean_change_csv ['obs_count_Northern']
-        SH_ATCw = 365*sudden_Tmean_change_csv ['ATCw_Southern']/sudden_Tmean_change_csv ['obs_count_Southern']
-        SH_ATCc = 365*sudden_Tmean_change_csv ['ATCc_Southern']/sudden_Tmean_change_csv ['obs_count_Southern']
+        Global_ATCw = 364*sudden_Tmean_change_csv ['ATCw_count']/sudden_Tmean_change_csv ['obs_count']
+        Global_ATCc = 364*sudden_Tmean_change_csv ['ATCc_count']/sudden_Tmean_change_csv ['obs_count']
+        NH_ATCw = 364*sudden_Tmean_change_csv ['ATCw_Northern']/sudden_Tmean_change_csv ['obs_count_Northern']
+        NH_ATCc = 364*sudden_Tmean_change_csv ['ATCc_Northern']/sudden_Tmean_change_csv ['obs_count_Northern']
+        SH_ATCw = 364*sudden_Tmean_change_csv ['ATCw_Southern']/sudden_Tmean_change_csv ['obs_count_Southern']
+        SH_ATCc = 364*sudden_Tmean_change_csv ['ATCc_Southern']/sudden_Tmean_change_csv ['obs_count_Southern']
 
 
         #cal trend
@@ -123,12 +123,12 @@ for i, model in enumerate(models):
 
     else:
         sudden_Tmean_change_csv = pd.read_csv("/data1/zxy/sudden_temp_change/CMIP6_daily_tas/"+str(model)+"/multi-threshold/"+str(model)+"_T_sudden_change_±10°C_1970_2015.csv")
-        Global_ATCw = sudden_Tmean_change_csv ['Global_ATCw']*365
-        Global_ATCc = sudden_Tmean_change_csv ['Global_ATCc']*365
-        NH_ATCw     = sudden_Tmean_change_csv ['Northern_ATCw']*365
-        NH_ATCc     = sudden_Tmean_change_csv ['Northern_ATCc']*365
-        SH_ATCw     = sudden_Tmean_change_csv ['Southern_ATCw']*365
-        SH_ATCc     = sudden_Tmean_change_csv ['Southern_ATCc']*365
+        Global_ATCw = sudden_Tmean_change_csv ['Global_ATCw']*364
+        Global_ATCc = sudden_Tmean_change_csv ['Global_ATCc']*364
+        NH_ATCw     = sudden_Tmean_change_csv ['Northern_ATCw']*364
+        NH_ATCc     = sudden_Tmean_change_csv ['Northern_ATCc']*364
+        SH_ATCw     = sudden_Tmean_change_csv ['Southern_ATCw']*364
+        SH_ATCc     = sudden_Tmean_change_csv ['Southern_ATCc']*364
     
         years = np.arange(1970, 2015)
         Global_ATCw_slope, Global_ATCw_pValue, = mk.original_test(Global_ATCw).slope, mk.original_test(Global_ATCw).p,

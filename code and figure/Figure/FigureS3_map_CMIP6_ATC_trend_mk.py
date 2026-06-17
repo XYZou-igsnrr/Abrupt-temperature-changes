@@ -50,7 +50,7 @@ for i, model in enumerate(models):
         lat = dataset['lat'][:]
         lon = dataset['lon'][:]
         
-    ATC_trend_CMIP6 = dataset['ATC_trend_slope'][:]*365
+    ATC_trend_CMIP6 = dataset['ATC_trend_slope'][:]*364
     ATC_pvalue_CMIP6 = dataset['ATC_trend_p_value'][:]
     
     count_trend = (~np.isnan(ATC_trend_CMIP6)).sum()

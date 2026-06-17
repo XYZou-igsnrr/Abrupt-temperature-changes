@@ -62,11 +62,11 @@ def plot_line(axes,ATC_csv_dataset,label):
 
     
     #===============================================plot ave=========================================================================#
-    sns.lineplot(x=gradient, y=global_ATC_ave*365,    ax=axes[0,0], label=label,color='#ff7f0e', zorder=1,linewidth=1.5,
+    sns.lineplot(x=gradient, y=global_ATC_ave*364,    ax=axes[0,0], label=label,color='#ff7f0e', zorder=1,linewidth=1.5,
                   marker='o',markersize=3,markerfacecolor='gray',markeredgecolor='none',markeredgewidth=0.8,linestyle=linestyle)
-    sns.lineplot(x=gradient, y=Northern_ATC_ave*365,  ax=axes[1,0], label=label,color='#ff7f0e', zorder=1,linewidth=1.5,
+    sns.lineplot(x=gradient, y=Northern_ATC_ave*364,  ax=axes[1,0], label=label,color='#ff7f0e', zorder=1,linewidth=1.5,
                   marker='o',markersize=3,markerfacecolor='gray',markeredgecolor='none',markeredgewidth=0.8,linestyle=linestyle)
-    sns.lineplot(x=gradient, y=Southern_ATC_ave*365,  ax=axes[2,0], label=label,color='#ff7f0e', zorder=1,linewidth=1.5,
+    sns.lineplot(x=gradient, y=Southern_ATC_ave*364,  ax=axes[2,0], label=label,color='#ff7f0e', zorder=1,linewidth=1.5,
                   marker='o',markersize=3,markerfacecolor='gray',markeredgecolor='none',markeredgewidth=0.8,linestyle=linestyle)     
 
     for ax in [axes[0,0],axes[1,0],axes[2,0]]:                
@@ -74,7 +74,7 @@ def plot_line(axes,ATC_csv_dataset,label):
         ax.set_xlabel('')
         ax.set_ylabel("")  
         ax.set_yscale('log')  
-        ax.set_ylim(0.002, 1*365)
+        ax.set_ylim(0.002, 1*364)
         yticks=[0.01,0.1, 1,10, 100, 300]
         ax.set_yticks(yticks)
         ax.yaxis.set_minor_locator(ticker.NullLocator())
@@ -206,9 +206,9 @@ for i, model in enumerate(models):
 #xticklabels = [str(x) for x in xticks]
 #xticklabels[-1] = f"{xticklabels[-1]}°C"
     
-CMIP6_data_global_ave = np.array(CMIP6_data_global_ave) *365
-CMIP6_data_Northern_ave = np.array(CMIP6_data_Northern_ave) *365
-CMIP6_data_Southern_ave = np.array(CMIP6_data_Southern_ave)*365
+CMIP6_data_global_ave = np.array(CMIP6_data_global_ave) *364
+CMIP6_data_Northern_ave = np.array(CMIP6_data_Northern_ave) *364
+CMIP6_data_Southern_ave = np.array(CMIP6_data_Southern_ave)*364
 
 CMIP6_data_global_rel = np.array(CMIP6_data_global_rel) 
 CMIP6_data_Northern_rel = np.array(CMIP6_data_Northern_rel) 
@@ -240,7 +240,7 @@ axes[1,1].fill_between(gradient, min_CMIP6_Northern_rel, max_CMIP6_Northern_rel,
 axes[2,1].fill_between(gradient, min_CMIP6_Southern_rel, max_CMIP6_Southern_rel, color='gray', alpha=alpha, label='CMIP6', zorder=1)
 
 axes[2,1].set_ylim(-2.4, 2.4)
-axes[2,0].set_ylim(0.002, 1*365)
+axes[2,0].set_ylim(0.002, 1*364)
 axes[2,0].set_yticks([0.01,0.1, 1,10, 100, 300])
 axes[2,0].set_yticklabels([r'$10^{-2}$',r'$10^{-1}$',r'$10^{0}$', r'$10^{1}$', r'$10^{2}$', '300'])
 

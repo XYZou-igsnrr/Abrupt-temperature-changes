@@ -32,12 +32,12 @@ CMIP6_C_down_set=dataset['CMIP6_C_down_set'][:]
 CMIP6_R_up_set=dataset['CMIP6_R_up_set'][:]
 CMIP6_R_down_set=dataset['CMIP6_R_down_set'][:]
 
-lfps_up_CRUJRA  =dataset['lfps_up_CRUJRA'][:]*365
-lfps_down_CRUJRA=dataset['lfps_down_CRUJRA'][:]*365
-lfps_up_ERA5  =dataset['lfps_up_ERA5'][:]*365
-lfps_down_ERA5=dataset['lfps_down_ERA5'][:]*365
-lfps_up_cmip6   =dataset['lfps_up_cmip6'][:]*365
-lfps_down_cmip6 =dataset['lfps_down_cmip6'][:]*365
+lfps_up_CRUJRA  =dataset['lfps_up_CRUJRA'][:]*364
+lfps_down_CRUJRA=dataset['lfps_down_CRUJRA'][:]*364
+lfps_up_ERA5  =dataset['lfps_up_ERA5'][:]*364
+lfps_down_ERA5=dataset['lfps_down_ERA5'][:]*364
+lfps_up_cmip6   =dataset['lfps_up_cmip6'][:]*364
+lfps_down_cmip6 =dataset['lfps_down_cmip6'][:]*364
 
 lfps_up_CRUJRA[seamask.mask]=np.nan
 lfps_down_CRUJRA[seamask.mask]=np.nan

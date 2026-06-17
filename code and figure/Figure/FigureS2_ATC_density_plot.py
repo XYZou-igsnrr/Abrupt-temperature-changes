@@ -65,22 +65,22 @@ station_combined = pd.merge(
     suffixes=('_up', '_down'),
     how='inner'
 )
-station_combined['ATC'] = station_combined['mean_T_ratio_up']*365 + station_combined['mean_T_ratio_down']*365
+station_combined['ATC'] = station_combined['mean_T_ratio_up']*364 + station_combined['mean_T_ratio_down']*364
 
 
-global_ATCc_ISD  ,global_ATCc_ISD_std,global_ATCc_ISD_se,global_ATCc_ISD_ci    =calculate_mean_se(station_combined['mean_T_ratio_down']*365)
-Northern_ATCc_ISD,Northern_ATCc_ISD_std,Northern_ATCc_ISD_se,Northern_ATCc_ISD_ci=calculate_mean_se(station_combined[station_combined['lat'] > 0]['mean_T_ratio_down']*365)
-Southern_ATCc_ISD,Southern_ATCc_ISD_std,Southern_ATCc_ISD_se,Southern_ATCc_ISD_ci=calculate_mean_se(station_combined[(station_combined['lat'] < 0) & (station_combined['lat'] > -60)]['mean_T_ratio_down']*365)
+global_ATCc_ISD  ,global_ATCc_ISD_std,global_ATCc_ISD_se,global_ATCc_ISD_ci    =calculate_mean_se(station_combined['mean_T_ratio_down']*364)
+Northern_ATCc_ISD,Northern_ATCc_ISD_std,Northern_ATCc_ISD_se,Northern_ATCc_ISD_ci=calculate_mean_se(station_combined[station_combined['lat'] > 0]['mean_T_ratio_down']*364)
+Southern_ATCc_ISD,Southern_ATCc_ISD_std,Southern_ATCc_ISD_se,Southern_ATCc_ISD_ci=calculate_mean_se(station_combined[(station_combined['lat'] < 0) & (station_combined['lat'] > -60)]['mean_T_ratio_down']*364)
 
-global_ATCw_ISD  ,global_ATCw_ISD_std,global_ATCw_ISD_se,global_ATCw_ISD_ci    =calculate_mean_se(station_combined['mean_T_ratio_up']*365)
-Northern_ATCw_ISD,Northern_ATCw_ISD_std,Northern_ATCw_ISD_se,Northern_ATCw_ISD_ci=calculate_mean_se(station_combined[station_combined['lat'] > 0]['mean_T_ratio_up']*365)
-Southern_ATCw_ISD,Southern_ATCw_ISD_std,Southern_ATCw_ISD_se,Southern_ATCw_ISD_ci=calculate_mean_se(station_combined[(station_combined['lat'] < 0) & (station_combined['lat'] > -60)]['mean_T_ratio_up']*365)
+global_ATCw_ISD  ,global_ATCw_ISD_std,global_ATCw_ISD_se,global_ATCw_ISD_ci    =calculate_mean_se(station_combined['mean_T_ratio_up']*364)
+Northern_ATCw_ISD,Northern_ATCw_ISD_std,Northern_ATCw_ISD_se,Northern_ATCw_ISD_ci=calculate_mean_se(station_combined[station_combined['lat'] > 0]['mean_T_ratio_up']*364)
+Southern_ATCw_ISD,Southern_ATCw_ISD_std,Southern_ATCw_ISD_se,Southern_ATCw_ISD_ci=calculate_mean_se(station_combined[(station_combined['lat'] < 0) & (station_combined['lat'] > -60)]['mean_T_ratio_up']*364)
 
 
 #=========================================load ERA5 data===================================================#
 ERA5_dataset=nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/LFCA/T_change_freq_ERA5_yearly_1970-2020.nc")
-ERA5_T_change_up_freq=ERA5_dataset['T_change_up_freq'][:]*365
-ERA5_T_change_down_freq=ERA5_dataset['T_change_down_freq'][:]*365
+ERA5_T_change_up_freq=ERA5_dataset['T_change_up_freq'][:]*364
+ERA5_T_change_down_freq=ERA5_dataset['T_change_down_freq'][:]*364
 ERA5_lat=ERA5_dataset['lat'][:]
 ERA5_lon=ERA5_dataset['lon'][:]
 ERA5_ATC_freq = ERA5_T_change_up_freq + ERA5_T_change_down_freq
@@ -101,8 +101,8 @@ Southern_ATCw_ERA5,Southern_ATCw_ERA5_std,Southern_ATCw_ERA5_se,Southern_ATCw_ER
 
 #=========================================load CRUJRA data===================================================#
 CRUJRA_dataset=nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/EOF/CRUJRA_sudden_T_change_freq_trend_±10°C_1970_2020_yearly.nc")
-CRUJRA_T_change_up_freq=CRUJRA_dataset['T_change_up_freq'][:]*365
-CRUJRA_T_change_down_freq=CRUJRA_dataset['T_change_down_freq'][:]*365
+CRUJRA_T_change_up_freq=CRUJRA_dataset['T_change_up_freq'][:]*364
+CRUJRA_T_change_down_freq=CRUJRA_dataset['T_change_down_freq'][:]*364
 CRUJRA_lat=CRUJRA_dataset['lat'][:]
 CRUJRA_lon=CRUJRA_dataset['lon'][:]
 CRUJRA_ATC_freq = CRUJRA_T_change_up_freq + CRUJRA_T_change_down_freq
@@ -163,8 +163,8 @@ ATCc_color='#a1c4d7'
 print('map ISD')
 
 #density plot
-x=station_combined['mean_T_ratio_up']*365
-y=station_combined['mean_T_ratio_down']*365
+x=station_combined['mean_T_ratio_up']*364
+y=station_combined['mean_T_ratio_down']*364
 #sns.scatterplot(x=x, y=y, ax=axes[0, 0], hue=density(x,y), palette=new_Purples,legend=False,size=0.1,)
 sns.histplot(x=x, y=y,ax=axes[0, 0], bins=50, thresh=0,cmap=histcmap,cbar=False,stat="percent",pmax=0.25,alpha=0.8)
 axes[0, 0].set_xlabel(r'ATCw occurrence (yr⁻¹)', )

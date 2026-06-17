@@ -58,15 +58,15 @@ station_combined = pd.merge(
     suffixes=('_up', '_down'),
     how='inner'
 )
-station_combined['ATC'] = station_combined['mean_T_ratio_up']*365 + station_combined['mean_T_ratio_down']*365
+station_combined['ATC'] = station_combined['mean_T_ratio_up']*364 + station_combined['mean_T_ratio_down']*364
 station_combined['ATCc_frac'] = station_combined['mean_T_ratio_down']/(station_combined['mean_T_ratio_up']+ station_combined['mean_T_ratio_down'])
 
 
 #=========================================load ERA5 data===================================================#
 #ERA5_dataset=nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/LFCA/T_change_freq_ERA5_yearly_1970-2020_0.5d.nc")
 ERA5_dataset=nc.Dataset("/data1/zxy/sudden_temp_change/ERA5_tmp/LFCA/T_change_freq_ERA5_yearly_1970-2020.nc")
-ERA5_ATCw=ERA5_dataset['T_change_up_freq'][:]*365
-ERA5_ATCc=ERA5_dataset['T_change_down_freq'][:]*365
+ERA5_ATCw=ERA5_dataset['T_change_up_freq'][:]*364
+ERA5_ATCc=ERA5_dataset['T_change_down_freq'][:]*364
 ERA5_lat=ERA5_dataset['lat'][:]
 ERA5_lon=ERA5_dataset['lon'][:]
 ERA5_ATC_freq = ERA5_ATCw + ERA5_ATCc
@@ -92,8 +92,8 @@ print("ERA5_global_ATCc",ERA5_global_ATCc,"ERA5_global_ATCc_std",ERA5_global_ATC
 
 #=========================================load CRUJRA data===================================================#
 CRUJRA_dataset=nc.Dataset("/data1/zxy/sudden_temp_change/CRU_JAR_tmp/EOF/CRUJRA_sudden_T_change_freq_trend_±10°C_1970_2020_yearly.nc")
-CRUJRA_ATCw=CRUJRA_dataset['T_change_up_freq'][:]*365
-CRUJRA_ATCc=CRUJRA_dataset['T_change_down_freq'][:]*365
+CRUJRA_ATCw=CRUJRA_dataset['T_change_up_freq'][:]*364
+CRUJRA_ATCc=CRUJRA_dataset['T_change_down_freq'][:]*364
 CRUJRA_lat=CRUJRA_dataset['lat'][:]
 CRUJRA_lon=CRUJRA_dataset['lon'][:]
 CRUJRA_ATC_freq = CRUJRA_ATCw + CRUJRA_ATCc
@@ -144,8 +144,8 @@ for i, model in enumerate(models):
         CMIP6_lat = dataset['lat'][:]
         CMIP6_lon = dataset['lon'][:]
 
-    ATCw = np.array(dataset['T_change_up_freq'][:])*365
-    ATCc = np.array(dataset['T_change_down_freq'][:])*365
+    ATCw = np.array(dataset['T_change_up_freq'][:])*364
+    ATCc = np.array(dataset['T_change_down_freq'][:])*364
     ATC  = ATCw[:]+ATCc[:]
     ATC_frac=ATCc[:]/ATC[:]
     ATC_frac_ave=np.nanmean(ATC_frac,axis=0)
